@@ -104,7 +104,9 @@ public:
         if( name ) lua_setglobal( L_, name );
     }
     void AddQObject( QObject* obj, 
-                     const char* tableName = 0, //not setting a global name allows to use this method to push a table on the stack
+                     //not setting a global name allows to use this method to push a table on the stack
+                     const char* tableName = 0,
+                     bool cache = false, //caches objects: only one table per QObject pointer generated
                      ObjectDeleteMode deleteMode = QOBJ_NO_DELETE, //destroys QObject instance
                      const QStringList& methodNames = QStringList(),
                      const QList< QMetaMethod::MethodType >& methodTypes =

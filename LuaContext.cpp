@@ -9,13 +9,14 @@
 namespace qlua {
 //------------------------------------------------------------------------------
 void LuaContext::AddQObject( QObject* obj, 
-                             const char* tableName, 
+                             const char* tableName,
+                             bool cache, 
                              ObjectDeleteMode deleteMode,
                              const QStringList& methodNames,
                              const QList< QMetaMethod::MethodType >& methodTypes ) {
     
     // if object already present push its associated table on the stack
-    if( objRefs_.contains( obj ) ) {
+    if( cache && objRefs_.contains( obj ) ) {
         lua_rawgeti( L_, LUA_REGISTRYINDEX, objRefs_[ obj ] );
         if( tableName ) lua_setglobal( L_, tableName ); 
         return;
@@ -78,16 +79,20 @@ void LuaContext::AddQObject( QObject* obj,
         lua_setfield( L_, -2, "__gc" ); // set table['__gc'] = function
         lua_setmetatable( L_, -2 ); // set metatable QObject table
     }
-    lua_pushvalue( L_, -1 );
-    objRefs_[ obj ] = luaL_ref( L_, LUA_REGISTRYINDEX );
+    if( cache ) {
+        lua_pushvalue( L_, -1 );
+        objRefs_[ obj ] = luaL_ref( L_, LUA_REGISTRYINDEX );
+    }
     if( tableName ) lua_setglobal( L_, tableName );
 }
 
 //------------------------------------------------------------------------------
 void LuaContext::RemoveObject( QObject* obj ) {
     objMethods_.remove( obj );
-    luaL_unref( L_, LUA_REGISTRYINDEX, objRefs_[ obj ] );
-    objRefs_.remove( obj );
+    if( objRefs_.contains( obj ) ) {
+        luaL_unref( L_, LUA_REGISTRYINDEX, objRefs_[ obj ] );
+        objRefs_.remove( obj );
+    }
 }
     
 //------------------------------------------------------------------------------
