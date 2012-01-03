@@ -1,5 +1,5 @@
-QLua 0.2
-========
+QLua
+====
 
 QLua is a binding between lua 5.1/5.2/luajit and Qt(tested with versions 
 4.7 & 4.8).
@@ -26,7 +26,7 @@ Features
 - optionally have Lua destroy the added QObjects when tables are garbage
   collected
 
-QLua *is not* a Lua wrapper for the Qt toolkit; its main use is to
+QLua **is not** a Lua wrapper for the Qt toolkit; its main use is to
 expose pre-created QObjects instances to the Lua environment.
 It is however fairly easy to use QLua as a Qt toolkit wrapper, you could e.g.
 1. Create a QObject factory and add it to the Lua context
@@ -39,51 +39,50 @@ through slots.
 Usage
 -----
 
-Create and instance of 'qlua::LuaContext' to create a new lua_State or wrap an
+Create and instance of `qlua::LuaContext` to create a new lua_State or wrap an
 existing one.
 
-Add QObjects through the qlua::LuaContext::AddQObject method.
+Add QObjects through the `qlua::LuaContext::AddQObject` method.
 
-qlua functions are available from Lua through the global 'qlua' object:
+qlua functions are available from Lua through the global `qlua` object:
 
-qlua.connect( <qobject>, <signal signature>, 
-              <lua callback> | <qobject, method> )
-qlua.disconnect( <qobject>, <signal signature>, 
-                 <lua callback> | <qobject, method> )
-qlua.version
+    qlua.connect( <qobject>, <signal signature>, 
+                  <lua callback> | <qobject, method> )
+    qlua.disconnect( <qobject>, <signal signature>, 
+                     <lua callback> | <qobject, method> )
+    qlua.version
 
-<qobject> can be a table created through LuaContext::AddQObject or a plain
+`<qobject>` can be a table created through `LuaContext::AddQObject` or a plain
 QObject pointer. 
 
 E.g.
-```
-#include "LuaContext.h"
 
-using namespace qlua;
+    #include "LuaContext.h"
 
-...
-LuaContext lc; 
-// or wrap pre-existing context: 'LuaContext lc( luaStatePtr );'
+    using namespace qlua;
+    ...
+    LuaContext lc; 
+    // or wrap pre-existing context: 'LuaContext lc( luaStatePtr );'
+    ...
+    // add qobject to context  
+    MyQObject qobj1;
+    lc.AddQObject( &qobj, "qobj1" );
+    ...
+    // add object and destroy it through Lua
+    MyQObject* qobj2 = new MyQObject;
+    lc.AddQObject( qobj, "qobj2", LuaContext::QOBJ_IMMEDIATE_DELETE );
+    // if the object instance name is null the object will not be
+    // added as a global object but simply left on top of the Lua stack
+    ...
+    // add object restricting the invokable methods to 'method1' and 'method2'
+    MyQObject qobj3;
+    lc.AddQObject( &qobj3, "qobj3", QStringList() << "method1" << "method2" );
+    ...
+    // connect signal to lua callback and evaluate Lua expressions
+    lc.Eval( "qlua.connect( qobj1, 'aSignal(QString)',"
+                            "function( msg ) print( msg ) end" );
+    lc.Eval( "qobj1.emitSignal( 'hello' )" ); 
 
-// add qobject to context  
-MyQObject qobj1;
-lc.AddQObject( &qobj, "qobj1" );
-...
-// add object and destroy it through Lua
-MyQObject* qobj2 = new MyQObject;
-lc.AddQObject( qobj, "qobj2", LuaContext::QOBJ_IMMEDIATE_DELETE );
-// if the object instance name is null the object will not be
-// added as a global object but simply left on top of the Lua stack
-...
-// add object restricting the invokable methods to 'method1' and 'method2'
-MyQObject qobj3;
-lc.AddQObject( &qobj3, "qobj3", QStringList() << "method1" << "method2" );
-...
-// connect signal to lua callback and evaluate Lua expressions
-lc.Eval( "qlua.connect( qobj1, 'aSignal(QString)',
-          function( msg ) print( msg ) end" );
-lc.Eval( "qobj1.emitSignal( 'hello' )" ); 
-```
 
 Build
 -----
@@ -107,6 +106,7 @@ Supported types
 ---------------
 
 The currently supported types are:
+
 - QVariantList
 - QVariantMap
 - QString
@@ -119,7 +119,7 @@ The currently supported types are:
 QVariantList and QVariantMap are converted to/from a Lua table.
 
 QList< T > and QVector< T > are converted to/from a Lua table through
-lua_rawseti/lua_rawgeti, so conversion is faster but metamethods are
+`lua_rawseti/lua_rawgeti`, so conversion is faster but metamethods are
 not invoked.
 
 Adding additional types
