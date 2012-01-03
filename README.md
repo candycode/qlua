@@ -1,4 +1,3 @@
-========
 QLua 0.2
 ========
 
@@ -30,8 +29,8 @@ Features
 QLua *is not* a Lua wrapper for the Qt toolkit; its main use is to
 expose pre-created QObjects instances to the Lua environment.
 It is however fairly easy to use QLua as a Qt toolkit wrapper, you could e.g.
-1) Create a QObject factory and add it to the Lua context
-2) Add methods to the QObject factory to create QObject wrappers which
+1. Create a QObject factory and add it to the Lua context
+2. Add methods to the QObject factory to create QObject wrappers which
    expose a signal/slot interface to Lua
 
 Note that (2) is required to access QObject/QWidget features not exposed
@@ -57,7 +56,7 @@ qlua.version
 QObject pointer. 
 
 E.g.
-
+```
 #include "LuaContext.h"
 
 using namespace qlua;
@@ -84,7 +83,7 @@ lc.AddQObject( &qobj3, "qobj3", QStringList() << "method1" << "method2" );
 lc.Eval( "qlua.connect( qobj1, 'aSignal(QString)',
           function( msg ) print( msg ) end" );
 lc.Eval( "qobj1.emitSignal( 'hello' )" ); 
-
+```
 
 Build
 -----
