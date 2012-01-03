@@ -29,6 +29,7 @@ Features
 QLua **is not** a Lua wrapper for the Qt toolkit; its main use is to
 expose pre-created QObjects instances to the Lua environment.
 It is however fairly easy to use QLua as a Qt toolkit wrapper, you could e.g.
+
 1. Create a QObject factory and add it to the Lua context
 2. Add methods to the QObject factory to create QObject wrappers which
    expose a signal/slot interface to Lua
@@ -57,6 +58,7 @@ QObject pointer.
 
 E.g.
 
+```cpp
     #include "LuaContext.h"
 
     using namespace qlua;
@@ -82,7 +84,7 @@ E.g.
     lc.Eval( "qlua.connect( qobj1, 'aSignal(QString)',"
                             "function( msg ) print( msg ) end" );
     lc.Eval( "qobj1.emitSignal( 'hello' )" ); 
-
+```
 
 Build
 -----
@@ -168,9 +170,5 @@ Todo
 - make it easier to register new user-defined types
 - wrap QObject::tr()
 - add additional pre-registered types namely:
-  * low level arrays:
-      struct Array {
-        int size;
-        T* data;
-      }; 
+  * low level arrays ( `struct Array { int size; T* data; }` )
   * QRegExp, QData
