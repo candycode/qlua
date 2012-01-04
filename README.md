@@ -21,10 +21,10 @@ Features
 - specify the subset of methods/method types to be added to the Lua table;
 - invoke QObject methods exposed as signals, slots or through the Q_INVOKABLE
   macro;
-- connect QObject signals to Lua callback functions
-- connect QObject signals to QObject methods
+- connect QObject signals to Lua callback functions;
+- connect QObject signals to QObject methods;
 - optionally have Lua destroy the added QObjects when tables are garbage
-  collected
+  collected;
 
 QLua **is not** a Lua wrapper for the Qt toolkit; its main use is to
 expose pre-created QObjects instances to the Lua environment.
@@ -45,7 +45,7 @@ existing one.
 
 Add QObjects through the `qlua::LuaContext::AddQObject` method.
 
-qlua functions are available from Lua through the global `qlua` object:
+QLua functions are available from Lua through the global `qlua` object:
 
     qlua.connect( <qobject>, <signal signature>, 
                   <lua callback> | <qobject, method> )
@@ -98,6 +98,7 @@ distribution.
 You should be able to build QLua on any platform that works with Qt >= 4.7 
 and Lua >= 5.1.
 I am personally using QLua on the following platforms (64bit versions only):
+
 - Windows 7
 - Mac OX X Snow Leopard
 - Ubuntu Linux 11.x
@@ -128,16 +129,17 @@ Adding additional types
 -----------------------
 
 The current version of QLua does not support addition of new types in a
-programmatic way i.e. you have to modify the source code.
+programmatic way i.e. you have to modify the source code yourself.
 
 To add an additional type:
-1) register the type through a call to qRegisterMetaType inside the 
+
+1. register the type through a call to qRegisterMetaType inside the 
    LuaContext::RegisterTypes() function in LuaContext.cpp;
-2) add an ArgConstructor(Arguments.h) specialization to create a type
+2. add an ArgConstructor(Arguments.h) specialization to create a type
    instance from the data on the Lua stack;
-3) add a ReturnConstructor(Arguments.h) specialization to create a Lua
+3. add a ReturnConstructor(Arguments.h) specialization to create a Lua
    value from a type instance;
-4) Add code to create the proper ArgumentConstructor/ReturnConstructor
+4. Add code to create the proper ArgumentConstructor/ReturnConstructor
    from the type name inside ParameterWrapper and ReturnWrapper constructors  
 
 In general just have a look at how the various QList<T> and QVector<T> types
