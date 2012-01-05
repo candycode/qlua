@@ -135,7 +135,7 @@ To add an additional type:
 
 1. register the type through a call to qRegisterMetaType inside the 
    LuaContext::RegisterTypes() function in LuaContext.cpp;
-2. add an ArgConstructor(Arguments.h) specialization to create a type
+2. add an ArgumentConstructor(Arguments.h) specialization to create a type
    instance from the data on the Lua stack;
 3. add a ReturnConstructor(Arguments.h) specialization to create a Lua
    value from a type instance;
