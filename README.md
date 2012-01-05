@@ -151,12 +151,12 @@ Limitations
 The main limitation is that the resolution of overloaded methods is based
 only on the number of parameters. 
 i.e. qlua is not able to resolve a call to two methods like:
-MyObject::method( int );
-MyObject::method( double );
+
+- MyObject::method( int );
+- MyObject::method( double );
 
 This is due to the fact that when invoking a C++ method from a dynamic language
-it is not possible to automatically resolve the parameter type, nor is, in the
-case of Lua, a conversion operator available.
+it is not possible to automatically resolve the parameter types.
 One option to address the issue is to find the best match at invocation time,
 which has proven to be quite slow in practice and probably quite unsafe as well
 since basically in the situation depicted above all numbers without a mantissa
@@ -173,4 +173,4 @@ Todo
 - wrap QObject::tr()
 - add additional pre-registered types namely:
   * low level arrays ( `struct Array { int size; T* data; }` )
-  * QRegExp, QData
+  * QRegExp, QDate
