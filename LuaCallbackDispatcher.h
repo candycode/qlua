@@ -26,7 +26,7 @@
 #include <QMap>
 #include <QList>
 
-#include "Arguments.h"
+#include "LuaArguments.h"
 
 
 namespace qlua {

@@ -38,7 +38,7 @@ include_directories( ${LUA_INCLUDE_DIR} ${QT_INCLUDE_DIR} )
 link_directories( ${LUA_LIB_DIR} ${QT_LIBRARY_DIR} )
 
 #library
-add_library( qlua LuaCallbackDispatcher.h   LuaContext.h   Arguments.h LuaQtTypes.h
+add_library( qlua LuaCallbackDispatcher.h   LuaContext.h   LuaArguments.h LuaQtTypes.h
                   LuaCallbackDispatcher.cpp LuaContext.cpp )
 target_link_libraries( qlua ${LUA_LIBRARIES} )
 

@@ -28,7 +28,6 @@
 #include <QMetaProperty>
 
 #include "LuaContext.h"
-#include "Arguments.h"
 
 namespace qlua {
 //------------------------------------------------------------------------------

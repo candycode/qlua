@@ -40,7 +40,7 @@ extern "C" {
 
 #include "LuaCallbackDispatcher.h"
 
-#include "Arguments.h"
+#include "LuaArguments.h"
 #include "LuaQtTypes.h"
 
 
