@@ -63,7 +63,7 @@ int main() {
         ctx.Eval( "fl = myobj3.copyShortList( {1,2,3} );\n" 
                   "print( fl[1] .. ' ' .. fl[ 3 ] );\n" );
         }
-        ///@warning works with Lua 5.2; luajit 2.0 beta9  won't invoke __gc!
+        ///@warning works with Lua 5.2; Lua 5.1.4 and LuaJIT 2.0 beta9  won't invoke __gc!
         if( pMyObject2.isNull() ) std::cout << "Object 2 deleted by Lua" << std::endl;
         else std::cerr << "Object 2 not deleted!" << std::endl;         
          
