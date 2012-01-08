@@ -23,6 +23,11 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+/// @file
+/// @brief Declarations and definitions of constructors for creating C++ values
+/// from Lua values.
+
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -40,74 +45,137 @@ extern "C" {
 
 #include "LuaQtTypes.h"
 
+/// QLua namespace
 namespace qlua {
 
 //------------------------------------------------------------------------------
+/// @brief Interface for constructor objects which generate C++ values from
+/// Lua values read from the Lua stack. 
+///
+///	There shall be exactly one and only one constructor per C++ type.
+///	The QLua run-time (indirectly) invokes the ArgConstructor::Create() 
+///	method whenever the invocation of a method of a QObject derived 
+///	class instance is requested from Lua code. 
 struct ArgConstructor {
+	/// Create a QGenericArgument from Lua values on the Lua stack.
     virtual QGenericArgument Create( lua_State*, int ) const = 0;
+	/// Virtual destructor.
     virtual ~ArgConstructor() {}
+	/// Create a new instance of the current class.
     virtual ArgConstructor* Clone() const = 0;
-};
 
+};
+/// ArgConstructor implementation for @c integer type.
 class IntArgConstructor : public ArgConstructor {
 public:
+	/// @brief Copy @c integer value from Lua stack to data member then create 
+	/// QGenericArgument referencing the data member.
+	/// @param L pointer to Lua stack
+	/// @param idx position of value on the Lua stack
+	/// @return QGenericArgument instance whose @c data field points
+	///         to a private data member of this class' instance
     QGenericArgument Create( lua_State* L, int idx ) const {
         i_ = luaL_checkint( L, idx );
         return Q_ARG( int, i_ );
     }
+	/// Make copy through copy constructor.
     IntArgConstructor* Clone() const {
         return new IntArgConstructor( *this );
     }
 private:
+	/// Storage for value read from Lua stack.
     mutable int i_;
 };
+/// ArgConstructor implementation for @c float type.
 class FloatArgConstructor : public ArgConstructor {
 public:
+	/// @brief Copy @c float value from Lua stack to data member then create 
+	/// QGenericArgument referencing the data member. The value is converted
+	/// from a Lua double precision number.
+	/// @param L pointer to Lua stack
+	/// @param idx position of value on the Lua stack
+	/// @return QGenericArgument instance whose @c data field points
+	///         to a private data member of this class' instance
     QGenericArgument Create( lua_State* L, int idx ) const {
         f_ = float( luaL_checknumber( L, idx ) );
         return Q_ARG( double, f_ );
     }
+	/// Make copy through copy constructor.
     FloatArgConstructor* Clone() const {
         return new FloatArgConstructor( *this );
     }
+private:
+	/// Storage for value read from Lua stack.
     mutable float f_;
 };
+/// ArgConstructor implementation for @c double type.
 class DoubleArgConstructor : public ArgConstructor {
 public:
+	/// @brief Copy @c double value from Lua stack to data member then create 
+	/// QGenericArgument referencing the data member.
+	/// @param L pointer to Lua stack
+	/// @param idx position of value on the Lua stack
+	/// @return QGenericArgument instance whose @c data field points
+	///         to a private data member of this class' instance
     QGenericArgument Create( lua_State* L, int idx ) const {
         d_ = luaL_checknumber( L, idx );
         return Q_ARG( double, d_ );
     }
+	/// Make copy through copy constructor.
     DoubleArgConstructor* Clone() const {
         return new DoubleArgConstructor( *this );
     }
 private:
+	/// Storage for value read from Lua stack.
     mutable double d_;
 };
+/// ArgConstructor implementation for @c QString type.
 class StringArgConstructor : public ArgConstructor {
 public:
+	/// @brief Copy @c string value from Lua stack to data member then create 
+	/// QGenericArgument referencing the data member.
+	/// The value is converted from a Lua string type in plain ASCII format.
+	/// @param L pointer to Lua stack
+	/// @param idx position of value on the Lua stack
+	/// @return QGenericArgument instance whose @c data field points
+	///         to a private data member of this class' instance
     QGenericArgument Create( lua_State* L, int idx ) const {
         s_ = luaL_checkstring( L, idx ); 
         return Q_ARG( QString, s_ );
     }
+	/// Make copy through copy constructor.
     StringArgConstructor* Clone() const {
         return new StringArgConstructor( *this );
     }
 private:
+	/// Storage for value read from Lua stack.
     mutable QString s_;
 };
+/// ArgConstructor implementation for @c QVariantMap type.
 class VariantMapArgConstructor : public ArgConstructor {
 public:
+	/// @brief Copy @c Lua value in table format from Lua stack to QVariantMap
+	/// data member then create QGenericArgument referencing the data member.
+	///
+	/// The value is converted by (possibly) recursively calling the 
+	/// @c ParseLuaTable function.
+	/// @param L pointer to Lua stack
+	/// @param idx position of value on the Lua stack
+	/// @return QGenericArgument instance whose @c data field points
+	///         to a private data member of this class' instance
     QGenericArgument Create( lua_State* L, int idx ) const {
         vm_ = ParseLuaTable( L, idx );
         return Q_ARG( QVariantMap, vm_ );
     }
+	/// Make copy through copy constructor.
     VariantMapArgConstructor* Clone() const {
         return new VariantMapArgConstructor( *this );
     }
 private:
+	/// Storage for value read from Lua stack.
     mutable QVariantMap vm_;
 };
+/// ArgConstructor implementation for @c QVariantList type.
 class VariantListArgConstructor : public ArgConstructor {
 public:
     QGenericArgument Create( lua_State* L, int idx ) const {

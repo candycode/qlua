@@ -23,6 +23,10 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+///@file 
+///@brief Utility functions for converting data types between Lua and Qt.
+
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -48,6 +52,7 @@ extern "C" {
 #define QLUA_VECTOR_INT "QVector<int>"
 #define QLUA_VECTOR_SHORT "QVector<short>"
 
+/// QLua namespace
 namespace qlua {
 
 //------------------------------------------------------------------------------
@@ -141,6 +146,8 @@ QVector< T > ParseLuaTableAsNumberVector( lua_State* L, int stackTableIndex ) {
 }
 
 //------------------------------------------------------------------------------
+/// Convert from Lua table to QVariantMap.
+/// @param L Lua Context
 inline
 QVariantMap ParseLuaTable( lua_State* L, int stackTableIndex, bool removeTable = true ) {
     luaL_checktype( L, stackTableIndex, LUA_TTABLE );
