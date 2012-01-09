@@ -199,7 +199,7 @@ private:
     /// Storage for value read from Lua stack.
     mutable QVariantList vl_;
 };
-// ArgConstructor implementation for @c QObject* type.
+/// ArgConstructor implementation for @c QObject* type.
 class ObjectStarArgConstructor : public ArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QObject*
@@ -230,7 +230,7 @@ private:
     /// Storage for value read from Lua stack.
     mutable QObject* obj_;
 };
-// ArgConstructor implementation for @c QWidget* type.
+/// ArgConstructor implementation for @c QWidget* type.
 class WidgetStarArgConstructor : public ArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QWidget*
@@ -261,7 +261,7 @@ private:
     /// Storage for value read from Lua stack.
     mutable QWidget* w_;
 };
-// ArgConstructor implementation for @c void* type.
+/// ArgConstructor implementation for @c void* type.
 class VoidStarArgConstructor : public ArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to void*
@@ -282,7 +282,7 @@ private:
     /// Storage for value read from Lua stack.
     mutable void* v_;
 };
-// ArgConstructor implementation for @c QList<T> type.
+/// ArgConstructor implementation for @c QList<T> type.
 template< typename T >
 class ListArgConstructor : public ArgConstructor {
 public:
@@ -312,7 +312,7 @@ private:
     /// Storage for value read from Lua stack.
     mutable QList< T > l_;
 };
-// ArgConstructor implementation for @c QVector<T> type.
+/// ArgConstructor implementation for @c QVector<T> type.
 template< typename T >
 class VectorArgConstructor : public ArgConstructor {
 public:
@@ -342,7 +342,7 @@ private:
     /// Storage for value read from Lua stack.
     mutable QVector< T > v_;
 };
-// ArgConstructor implementation for @c QStringList type.
+/// ArgConstructor implementation for @c QStringList type.
 class StringListArgConstructor : public ArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QStringList
@@ -364,20 +364,34 @@ private:
     mutable QStringList l_;
 };
 //------------------------------------------------------------------------------
+/// @brief Abstract base class for return constructors which create Lua values
+/// from C++ values.
 class ReturnConstructor {
 public:
+    /// Push value on Lua stack, invoked when a value must be returned
+    /// from a method invoked from Lua.
     virtual void Push( lua_State* ) const = 0;
+    /// Push value read from a specific memory location on Lua stack,
+    /// invoked when calling a method as result of signal emission.
     virtual void Push( lua_State* , void* ) const = 0;
+    /// Virtual destructor.
     virtual ~ReturnConstructor() {}
+    /// Return copy of object.
     virtual ReturnConstructor* Clone() const = 0;
+    /// Return type of constructed data.
     virtual QMetaType::Type Type() const = 0;
+    /// Return QGenericReturnArguments holding a reference to the
+    /// memory location where the returned value is stored.
     QGenericReturnArgument Argument() const { return ga_; }
+protected:
+    /// Creates return argument of the proper type.
     template < typename T > void SetArg( T& arg ) {
         ga_ = QReturnArgument< T >( QMetaType::typeName( Type() ), arg );
     }
-protected:
+    /// Placeholder for returned data. 
     QGenericReturnArgument ga_; 
 };
+/// ReturnConstructor implementation for @c integer type
 class IntReturnConstructor : public ReturnConstructor {
 public:
     IntReturnConstructor() {
@@ -399,6 +413,7 @@ public:
 private:
     int i_; 
 };
+/// ReturnConstructor implementation for @c double type
 class DoubleReturnConstructor : public ReturnConstructor {
 public:
     DoubleReturnConstructor() {
@@ -420,6 +435,7 @@ public:
 private:
     double d_;
 };
+/// ReturnConstructor implementation for @c float type
 class FloatReturnConstructor : public ReturnConstructor {
 public:
     FloatReturnConstructor() {
@@ -441,6 +457,7 @@ public:
 private:
     float f_;
 };
+/// ReturnConstructor implementation for @c QString type
 class StringReturnConstructor : public ReturnConstructor {
 public:
     StringReturnConstructor() {
@@ -462,6 +479,7 @@ public:
 private:
     QString s_;
 };
+/// ReturnConstructor implementation for @c void type
 class VoidReturnConstructor : public ReturnConstructor {
 public:
     void Push( lua_State*  ) const {}
@@ -471,6 +489,7 @@ public:
     }
     QMetaType::Type Type() const { return QMetaType::Void; }
 };
+/// ReturnConstructor implementation for @c QVariantMap type
 class VariantMapReturnConstructor : public ReturnConstructor {
 public:
     VariantMapReturnConstructor() {
@@ -492,6 +511,7 @@ public:
 private:
     QVariantMap vm_;
 };
+/// ReturnConstructor implementation for @c QVariantList type
 class VariantListReturnConstructor : public ReturnConstructor {
 public:
     VariantListReturnConstructor() {
@@ -513,6 +533,7 @@ public:
 private:
     QVariantList vl_;
 };
+/// ReturnConstructor implementation for @c QObject* type
 class ObjectStarReturnConstructor : public ReturnConstructor {
 public:
     ObjectStarReturnConstructor() {
@@ -534,6 +555,7 @@ public:
 private:
     QObject* obj_;
 };
+/// ReturnConstructor implementation for @c QWidget* type
 class WidgetStarReturnConstructor : public ReturnConstructor {
 public:
     WidgetStarReturnConstructor() {
@@ -555,6 +577,7 @@ public:
 private:
     QWidget* w_;
 };
+/// ReturnConstructor implementation for @c void* type
 class VoidStarReturnConstructor : public ReturnConstructor {
 public:
     VoidStarReturnConstructor() {
@@ -576,7 +599,13 @@ public:
 private:
     void* v_;
 };
-
+/// @brief ReturnConstructor implementation for @c QList<T> type.
+///
+/// @c T is a numeric type; supported types are:
+/// - int
+/// - short
+/// - float
+/// - double
 template < typename T >
 class ListReturnConstructor : public ReturnConstructor {
 public:
@@ -599,7 +628,13 @@ public:
 private:
     QList< T > l_;
 };
-
+/// @brief ReturnConstructor implementation for @c QVector<T> type.
+///
+/// @c T is a numeric type; supported types are:
+///   - @c int
+///   - @c short
+///   - @c float
+///   - @c double
 template < typename T >
 class VectorReturnConstructor : public ReturnConstructor {
 public:
@@ -622,6 +657,7 @@ public:
 private:
     QVector< T > v_;
 };
+/// ReturnConstructor implementation for @c QStringList type
 class StringListReturnConstructor : public ReturnConstructor {
 public:
     StringListReturnConstructor() {
