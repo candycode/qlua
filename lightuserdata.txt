@@ -1,0 +1,21 @@
+LuaArguments.h:199:        } else if( lua_islightuserdata( L, idx ) ) {
+LuaArguments.h:218:        } else if( lua_islightuserdata( L, idx ) ) {
+LuaArguments.h:427:        lua_pushlightuserdata( L, obj_ );
+LuaArguments.h:430:        lua_pushlightuserdata( L,  value );
+LuaArguments.h:448:        lua_pushlightuserdata( L, w_ );
+LuaArguments.h:451:        lua_pushlightuserdata( L,  value );
+LuaArguments.h:469:        lua_pushlightuserdata( L, v_ );
+LuaArguments.h:472:        lua_pushlightuserdata( L,  value );
+LuaContext.cpp:74:            lua_pushlightuserdata( L_, &( objMethods_[ obj ][ name ] ) );
+LuaContext.cpp:75:            lua_pushlightuserdata( L_, this );
+LuaContext.cpp:81:    lua_pushlightuserdata( L_, obj );
+LuaContext.cpp:93:        lua_pushlightuserdata( L_, obj );
+LuaContext.cpp:94:        lua_pushlightuserdata( L_, this );
+LuaContext.cpp:157:    if( !lua_istable( L, 1 ) && !lua_islightuserdata( L, 1 ) ) {
+LuaContext.cpp:196:    } else if( lua_islightuserdata( L, 3 ) ) {
+LuaContext.cpp:249:    if( !lua_istable( L, 1 ) && !lua_islightuserdata( L, 1 ) ) {
+LuaContext.cpp:277:    } else if( lua_islightuserdata( L, 3 ) ) {
+LuaContext.h:88:        lua_pushlightuserdata( L_, this );
+LuaContext.h:93:        lua_pushlightuserdata( L_, this );
+LuaContext.h:98:        lua_pushlightuserdata( L_, this );
+LuaQtTypes.h:103:    } else if( lua_islightuserdata( L, idx ) ) {

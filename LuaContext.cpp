@@ -22,6 +22,7 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#include <cassert>
 #include <QMetaObject>
 #include <QSet>
 #include <QMetaType>
@@ -78,29 +79,25 @@ void LuaContext::AddQObject( QObject* obj,
         }                               
     }
     lua_pushstring( L_, "qobject__" );
+    QObject** pObj = reinterpret_cast< QObject** >( lua_newuserdata( L_, sizeof( QObject* ) ) );
+    *pObj = obj;
+    // assign metatable with __gc method to delete QObject if/when
+    // required
+    lua_newtable( L_ ); // push metatable;
     lua_pushlightuserdata( L_, obj );
-    lua_rawset( L_, -3 );
+    lua_pushlightuserdata( L_, this );
+    lua_pushinteger( L_, int( deleteMode ) ); 
+    lua_pushcclosure( L_, &LuaContext::DeleteObject, 3 ); // push __gc method
+    lua_setfield( L_, -2, "__gc" ); // set table['__gc'] = function
+    lua_setmetatable( L_, -2 ); // set metatable QObject table
+    lua_settable( L_, -3 );
+
     //properties
     for( int i = 0; i != mo->propertyCount(); ++i ) {
         QMetaProperty mp = mo->property( i );
         lua_pushstring( L_, mp.name() );
         VariantToLuaValue( mp.read( obj ), L_ );
         lua_rawset( L_, -3 );
-    }
-    if( deleteMode == QOBJ_IMMEDIATE_DELETE ||
-        deleteMode == QOBJ_DELETE_LATER ) { //add __gc method
-        lua_newtable( L_ ); // push metatable
-        lua_pushlightuserdata( L_, obj );
-        lua_pushlightuserdata( L_, this );
-        lua_pushinteger( L_, int( deleteMode ) ); 
-#ifdef QLUA_REMOVE_GC        
-        lua_pushvalue( L_, -4 );
-        lua_pushcclosure( L_, &LuaContext::DeleteObject, 4 ); // push __gc method
-#else
-        lua_pushcclosure( L_, &LuaContext::DeleteObject, 3 ); // push __gc method
-#endif                
-        lua_setfield( L_, -2, "__gc" ); // set table['__gc'] = function
-        lua_setmetatable( L_, -2 ); // set metatable QObject table
     }
     if( cache ) {
         lua_pushvalue( L_, -1 );
@@ -124,13 +121,6 @@ int LuaContext::DeleteObject( lua_State* L ) {
     LuaContext* lc = reinterpret_cast< LuaContext* >( lua_touserdata( L, lua_upvalueindex( 2 ) ) );
     ObjectDeleteMode dm = ObjectDeleteMode( lua_tointeger( L, lua_upvalueindex( 3 ) ) );
     lc->RemoveObject( obj );
-#ifdef QLUA_REMOVE_GC    
-    lua_pushvalue( L, lua_upvalueindex( 4 ) ); //push metatable on the stack
-    //remove __gc method 
-    lua_pushnil( L );
-    lua_setfield( L, -2, "__gc" );
-    lua_pop( L, 1 );
-#endif
     if( dm == QOBJ_IMMEDIATE_DELETE ) delete obj;
     else if( dm == QOBJ_DELETE_LATER ) obj->deleteLater();    
     return 0;
@@ -167,7 +157,7 @@ int LuaContext::QtConnect( lua_State* L ) {
             RaiseLuaError( L, "qlua.connect: Wrong table format: reference to QObject not found" );
             return 0;
         }
-        obj = reinterpret_cast< QObject* >( lua_touserdata( L, -1 ) );
+        obj = *reinterpret_cast< QObject** >( lua_touserdata( L, -1 ) );
     } else obj = reinterpret_cast< QObject* >( lua_touserdata( L, 1 ) );
     
     const char* signal = lua_tostring( L, 2 );
@@ -222,7 +212,7 @@ int LuaContext::QtConnect( lua_State* L ) {
             RaiseLuaError( L, "qlua.connect: Wrong table format: reference to QObject not found" );
             return 0;
         }
-        QObject* targetObj = reinterpret_cast< QObject* >( lua_touserdata( L, -1 ) );
+        QObject* targetObj = *reinterpret_cast< QObject** >( lua_touserdata( L, -1 ) );
         const char* targetMethod = lua_tostring( L, 4 );
         const QMetaObject* mo = targetObj->metaObject();
         const int targetMethodIdx = mo->indexOfMethod( QMetaObject::normalizedSignature( targetMethod ) ); 
@@ -258,7 +248,7 @@ int LuaContext::QtDisconnect( lua_State* L ) {
             RaiseLuaError( L, "qlua.connect: Wrong table format: reference to QObject not found" );
             return 0;
         }
-        obj = reinterpret_cast< QObject* >( lua_touserdata( L, -1 ) );
+        obj = *reinterpret_cast< QObject** >( lua_touserdata( L, -1 ) );
     } else obj = reinterpret_cast< QObject* >( lua_touserdata( L, 1 ) );
     
     const char* signal = lua_tostring( L, 2 );
@@ -303,7 +293,7 @@ int LuaContext::QtDisconnect( lua_State* L ) {
             RaiseLuaError( L, "qlua.connect: Wrong table format: reference to QObject not found" );
             return 0;
         }
-        QObject* targetObj = reinterpret_cast< QObject* >( lua_touserdata( L, -1 ) );
+        QObject* targetObj = *reinterpret_cast< QObject** >( lua_touserdata( L, -1 ) );
         const char* targetMethod = lua_tostring( L, 4 );
         const QMetaObject* mo = targetObj->metaObject();
         const int targetMethodIdx = mo->indexOfMethod( QMetaObject::normalizedSignature( targetMethod ) ); 
