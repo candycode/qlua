@@ -51,6 +51,7 @@ extern "C" {
 #define QLUA_VECTOR_FLOAT32 "QVector<float>"
 #define QLUA_VECTOR_INT "QVector<int>"
 #define QLUA_VECTOR_SHORT "QVector<short>"
+#define QLUA_STRING_LIST "QList<QString>"
 
 /// QLua namespace
 namespace qlua {
@@ -66,6 +67,7 @@ template <> inline const char* TypeName< QVector< double > >() { return QLUA_VEC
 template <> inline const char* TypeName< QVector< float > >() { return QLUA_VECTOR_FLOAT32; }
 template <> inline const char* TypeName< QVector< int > >() { return QLUA_VECTOR_INT; }
 template <> inline const char* TypeName< QVector< short > >() { return QLUA_VECTOR_SHORT; }
+template <> inline const char* TypeName< QList< QString > >() { return QLUA_STRING_LIST; }
 
 //------------------------------------------------------------------------------
 inline
@@ -126,6 +128,25 @@ QList< T > ParseLuaTableAsNumberList( lua_State* L, int stackTableIndex ) {
     }
     return list;
 }
+//------------------------------------------------------------------------------
+inline
+QStringList ParseLuaTableAsStringList( lua_State* L, int stackTableIndex ) {
+      luaL_checktype( L, stackTableIndex, LUA_TTABLE );
+#if LUA_VERSION_NUM > 501 
+    int tableSize = int( lua_rawlen( L, stackTableIndex ) );
+#else
+    int tableSize = int( lua_objlen( L, stackTableIndex ) );
+#endif
+    QStringList list;
+    list.reserve( int( tableSize ) );
+    ++tableSize;
+    for( int i = 1; i != tableSize; ++i ) {
+        lua_rawgeti( L, stackTableIndex, i );
+        list.push_back( QString( lua_tostring( L, -1 ) ) );
+        lua_pop( L, 1 );
+    }
+    return list;
+}
 template < typename T >
 QVector< T > ParseLuaTableAsNumberVector( lua_State* L, int stackTableIndex ) {
 #if LUA_VERSION_NUM > 501 
@@ -182,20 +203,7 @@ QVariantList ParseLuaTableAsVariantList( lua_State* L, int stackTableIndex, bool
     return l;
 }
 
-inline
-QStringList ParseLuaTableAsStringList( lua_State* L, int stackTableIndex, bool removeTable = true ) {
-    QStringList l;
-    lua_pushnil(L);  // first key
-    stackTableIndex = stackTableIndex < 0 ? stackTableIndex - 1 : stackTableIndex;
-    while( lua_next( L, stackTableIndex ) != 0 ) {
-        /* uses 'key' (at index -2) and 'value' (at index -1) */
-        l.push_back( luaL_checkstring( L, -1 ) );
-        lua_pop(L, 1);
-    }
-    if( removeTable ) lua_pop( L, 1 ); // remvove table
-    return l;
-}
-
+        
 void VariantMapToLuaTable( const QVariantMap&, lua_State* );
 void VariantListToLuaTable( const QVariantList&, lua_State* );
 

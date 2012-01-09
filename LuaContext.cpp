@@ -135,6 +135,7 @@ void LuaContext::RegisterTypes() {
     qRegisterMetaType< QVector< float > >( QLUA_VECTOR_FLOAT32 );
     qRegisterMetaType< QVector< int > >( QLUA_VECTOR_INT );
     qRegisterMetaType< QVector< short > >( QLUA_VECTOR_SHORT );
+    qRegisterMetaType< QList< QString > >( QLUA_STRING_LIST );
 }
 
 //------------------------------------------------------------------------------
