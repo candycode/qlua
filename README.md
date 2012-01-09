@@ -1,10 +1,12 @@
-QLua
+
+<!-- saved from url=(0054)https://raw.github.com/candycode/qlua/master/README.md -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">QLua
 ====
 
 QLua is a binding between lua 5.1/5.2/luajit and Qt(tested with versions 
-4.7 & 4.8).
+4.7 &amp; 4.8).
 
-License & Copyright
+License &amp; Copyright
 -------------------
 
 QLua is Copyright (c) 2012 by Ugo Varetto and distributed under the terms of the
@@ -47,13 +49,13 @@ Add QObjects through the `qlua::LuaContext::AddQObject` method.
 
 QLua functions are available from Lua through the global `qlua` object:
 
-    qlua.connect( <qobject>, <signal signature>, 
-                  <lua callback> | <qobject, method> )
-    qlua.disconnect( <qobject>, <signal signature>, 
-                     <lua callback> | <qobject, method> )
+    qlua.connect( &lt;qobject&gt;, &lt;signal signature&gt;, 
+                  &lt;lua callback&gt; | &lt;qobject, method&gt; )
+    qlua.disconnect( &lt;qobject&gt;, &lt;signal signature&gt;, 
+                     &lt;lua callback&gt; | &lt;qobject, method&gt; )
     qlua.version
 
-`<qobject>` can be a table created through `LuaContext::AddQObject` or a plain
+`&lt;qobject&gt;` can be a table created through `LuaContext::AddQObject` or a plain
 QObject pointer. 
 
 E.g.
@@ -68,7 +70,7 @@ E.g.
     ...
     // add qobject to context  
     MyQObject qobj1;
-    lc.AddQObject( &qobj, "qobj1" );
+    lc.AddQObject( &amp;qobj, "qobj1" );
     ...
     // add object and destroy it through Lua
     MyQObject* qobj2 = new MyQObject;
@@ -78,7 +80,7 @@ E.g.
     ...
     // add object restricting the invokable methods to 'method1' and 'method2'
     MyQObject qobj3;
-    lc.AddQObject( &qobj3, "qobj3", QStringList() << "method1" << "method2" );
+    lc.AddQObject( &amp;qobj3, "qobj3", QStringList() &lt;&lt; "method1" &lt;&lt; "method2" );
     ...
     // connect signal to lua callback and evaluate Lua expressions
     lc.Eval( "qlua.connect( qobj1, 'aSignal(QString)',"
@@ -95,8 +97,8 @@ easily copy and paste the source code directly into any project.
 
 Being a binding between Qt and Lua the only dependencies are a Lua and Qt 
 distribution.
-You should be able to build QLua on any platform that works with Qt >= 4.7 
-and Lua >= 5.1.
+You should be able to build QLua on any platform that works with Qt &gt;= 4.7 
+and Lua &gt;= 5.1.
 I am personally using QLua on the following platforms (64bit versions only):
 
 - Windows 7
@@ -114,14 +116,14 @@ The currently supported types are:
 - QVariantMap
 - QString
 - QStringList
-- QVector< int | short | float | double >
-- QList< int | short | float | double >
+- QVector&lt; int | short | float | double &gt;
+- QList&lt; int | short | float | double &gt;
 - bool, int, float, double, short, long long
 - void*, QObject*, QWidget*
 
 QVariantList and QVariantMap are converted to/from a Lua table.
 
-QList< T > and QVector< T > are converted to/from a Lua table through
+QList&lt; T &gt; and QVector&lt; T &gt; are converted to/from a Lua table through
 `lua_rawseti/lua_rawgeti`, so conversion is faster but metamethods are
 not invoked.
 
@@ -142,7 +144,7 @@ To add an additional type:
 4. Add code to create the proper ArgumentConstructor/ReturnConstructor
    from the type name inside ParameterWrapper and ReturnWrapper constructors  
 
-In general just have a look at how the various QList<T> and QVector<T> types
+In general just have a look at how the various QList&lt;T&gt; and QVector&lt;T&gt; types
 were added to qlua.
 
 Limitations
@@ -174,3 +176,4 @@ Todo
 - add additional pre-registered types namely:
   * low level arrays ( `struct Array { int size; T* data; }` )
   * QRegExp, QDate
+</pre></body></html>
