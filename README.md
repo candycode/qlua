@@ -2,9 +2,9 @@ QLua
 ====
 
 QLua is a binding between lua 5.1/5.2/luajit and Qt(tested with versions 
-4.7 &amp; 4.8).
+4.7 and 4.8).
 
-License &amp; Copyright
+License & Copyright
 -------------------
 
 QLua is Copyright (c) 2012 by Ugo Varetto and distributed under the terms of the
@@ -47,13 +47,13 @@ Add QObjects through the `qlua::LuaContext::AddQObject` method.
 
 QLua functions are available from Lua through the global `qlua` object:
 
-    qlua.connect( &lt;qobject&gt;, &lt;signal signature&gt;, 
-                  &lt;lua callback&gt; | &lt;qobject, method&gt; )
-    qlua.disconnect( &lt;qobject&gt;, &lt;signal signature&gt;, 
-                     &lt;lua callback&gt; | &lt;qobject, method&gt; )
+    qlua.connect( <qobject>, <signal signature>, 
+                  <lua callback> | <qobject, method> )
+    qlua.disconnect( <qobject>, <signal signature>, 
+                     <lua callback> | <qobject, method> )
     qlua.version
 
-`&lt;qobject&gt;` can be a table created through `LuaContext::AddQObject` or a plain
+`<qobject>` can be a table created through `LuaContext::AddQObject` or a plain
 QObject pointer. 
 
 E.g.
@@ -78,7 +78,7 @@ E.g.
     ...
     // add object restricting the invokable methods to 'method1' and 'method2'
     MyQObject qobj3;
-    lc.AddQObject( &amp;qobj3, "qobj3", QStringList() &lt;&lt; "method1" &lt;&lt; "method2" );
+    lc.AddQObject( &amp;qobj3, "qobj3", QStringList() << "method1" << "method2" );
     ...
     // connect signal to lua callback and evaluate Lua expressions
     lc.Eval( "qlua.connect( qobj1, 'aSignal(QString)',"
@@ -114,10 +114,11 @@ The currently supported types are:
 - QVariantMap
 - QString
 - QStringList
-- QVector&lt; int | short | float | double &gt;
-- QList&lt; int | short | float | double &gt;
+- QVector< int | short | float | double >
+- QList< int | short | float | double >
 - bool, int, float, double, short, long long
-- void*, QObject*, QWidget*
+- void*
+- QObject*, QWidget*
 
 QVariantList and QVariantMap are converted to/from a Lua table.
 
