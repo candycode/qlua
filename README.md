@@ -1,6 +1,4 @@
-
-<!-- saved from url=(0054)https://raw.github.com/candycode/qlua/master/README.md -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">QLua
+QLua
 ====
 
 QLua is a binding between lua 5.1/5.2/luajit and Qt(tested with versions 
@@ -97,8 +95,8 @@ easily copy and paste the source code directly into any project.
 
 Being a binding between Qt and Lua the only dependencies are a Lua and Qt 
 distribution.
-You should be able to build QLua on any platform that works with Qt &gt;= 4.7 
-and Lua &gt;= 5.1.
+You should be able to build QLua on any platform that works with Qt >= 4.7 
+and Lua >= 5.1.
 I am personally using QLua on the following platforms (64bit versions only):
 
 - Windows 7
@@ -123,7 +121,7 @@ The currently supported types are:
 
 QVariantList and QVariantMap are converted to/from a Lua table.
 
-QList&lt; T &gt; and QVector&lt; T &gt; are converted to/from a Lua table through
+QList<T> and QVector<T> are converted to/from a Lua table through
 `lua_rawseti/lua_rawgeti`, so conversion is faster but metamethods are
 not invoked.
 
@@ -144,7 +142,7 @@ To add an additional type:
 4. Add code to create the proper ArgumentConstructor/ReturnConstructor
    from the type name inside ParameterWrapper and ReturnWrapper constructors  
 
-In general just have a look at how the various QList&lt;T&gt; and QVector&lt;T&gt; types
+In general just have a look at how the various QList<T> and QVector<T> types
 were added to qlua.
 
 Limitations
@@ -176,4 +174,3 @@ Todo
 - add additional pre-registered types namely:
   * low level arrays ( `struct Array { int size; T* data; }` )
   * QRegExp, QDate
-</pre></body></html>
