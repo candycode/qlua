@@ -681,12 +681,26 @@ private:
 };
 
 //------------------------------------------------------------------------------
+/// @brief Wrapper for parameters in a QObject method invocation.
+///
+/// Whenever a new QObject is added to the Lua context, the signature of each
+/// method is translated to an index and a list of ParameterWrapper objects 
+/// stored inside a LuaContext instance.
+/// At invocation time the proper method is invoked through a call to
+/// @c QMetaMethod::invoke passing the arguments returned by the ParameterWrapper::Arg
+/// method invoked on each parameter in the argument list.
+/// ParameterWrapper stores an instance of ArgConstructor used to create a
+/// QGenericArgument from values on the Lua stack.
 class ParameterWrapper {
 public:
+	/// @brief Default constructor.
     ParameterWrapper() : ac_( 0 ) {}
-    ParameterWrapper( const ParameterWrapper& other ) : ac_( 0 ) {
+	/// Copy constructor: Clone ArgConstructor instance.
+	ParameterWrapper( const ParameterWrapper& other ) : ac_( 0 ) {
         if( other.ac_ ) ac_ = other.ac_->Clone();
     }
+	/// @brief Construct instance from type name. Creates proper instance of
+	/// inner ArgConstructor from type info.
     ParameterWrapper( const QString& type ) : ac_( 0 ) {
         if( type == QMetaType::typeName( QMetaType::Int ) ) {
             ac_ = new IntArgConstructor;
@@ -726,20 +740,39 @@ public:
             ac_ = new VectorArgConstructor< short >;
         } else throw std::logic_error( ( "Type " + type + " unknown" ).toStdString() );
     }
+	/// @brief Return QGenericArgument instance created from values on the Lua stack.
+	///
+	/// Internally it calls ArgConstructor::Create to generate QGenericArguments from
+	/// Lua values.
     QGenericArgument Arg( lua_State* L, int idx ) const {
         return ac_ ? ac_->Create( L, idx ) : QGenericArgument();
     }
+	/// @brief Destructor; delete ArgConstructor instance.
     ~ParameterWrapper() { delete ac_; }
 private:
+	/// Instance of ArgConstructor created from type information at construction
+	/// time.
     ArgConstructor* ac_;    
 };
 
+/// @brief Wrapper for objects returned from QObject method invocation or passes
+/// to Lua callbacks in response to emitted signals.
+///
+/// This class translates C++ values to Lua values and is used to both return
+/// values from method invocations and translate the parameters received from
+/// a signal to Lua values whenever a Lua callback invocation is triggered by
+/// an emitted signal.
 class ReturnWrapper {
 public:
+	///@brief Default constructor.
     ReturnWrapper() : rc_( 0 ) {}
-    ReturnWrapper( const ReturnWrapper& other ) : rc_( 0 ), type_( other.type_ ) {
+	///@brief Copy constructor: Clones the internal Return constructor instance.
+	ReturnWrapper( const ReturnWrapper& other ) : rc_( 0 ), type_( other.type_ ) {
         if( other.rc_ ) rc_ = other.rc_->Clone();
     }
+	///@brief Create instance from type name.
+	///
+	///An instance of ReturnConstructor is created from the passes type name.
     ReturnWrapper( const QString& type ) : rc_( 0 ), type_( type ) {
         if( type_ == QMetaType::typeName( QMetaType::Int ) ) {
             rc_ = new IntReturnConstructor;
@@ -780,25 +813,54 @@ public:
         } else if( type_.isEmpty() ) rc_ = new VoidReturnConstructor;
         else throw std::logic_error( ( "Type " + type + " unknown" ).toStdString() );
     }
+	/// @brief Push values stored in the inner ReturnConstructor instance on the
+	/// Lua stack.
+	///
+	/// This is the method invoked to return values from a QObject method invocation.
     void Push( lua_State* L ) const {
         rc_->Push( L );
     }
+	/// @brief Push values stored in passed memory location on the Lua stack.
+	///
+	/// This is the method invoked when a Lua callback is called through
+	/// @c QObject::qt_metacall (e.g. through a triggered signal). When Lua 
+	/// functions are called through @c qt_metacall the list of arguments is stored 
+	/// inside an array of void pointers; each parameter must therefore be converted to 
+	/// the proper C++ type first and then translated to a Lua values.
+	/// @param L Lua state
+	/// @param value memory location to read from
     void Push( lua_State* L, void* value ) const {
         rc_->Push( L, value ); // called from the callback dispatcher method
     }
+	/// @brief Return the location where the return argument passed to a method
+	/// invocation shall be stored.
+	///
+	/// This method is invoked to provide QMetaMethod::invoke with the location
+	/// where the return value will be stored, which is the storage space provided
+	/// by the ReturnConstructor instance stored in this object.
+	/// After the method invocation returns the value in the ReturnConstructor instance
+	/// is pushed on the Lua stack through a call to ReturnConstructor::Push(lua_State*).
     QGenericReturnArgument Arg() const { return rc_->Argument(); }
+	/// Type name.
     const QString& Type() const { 
         return type_;
     }
+	/// Meta type.
     QMetaType::Type MetaType() const { return rc_->Type(); }
+	/// Delete ReturnConstructor instance.
     ~ReturnWrapper() { delete rc_; }
 private:
+	/// ReturnConstructor instance created at construction time.
     ReturnConstructor* rc_;
+	/// Qt type name of data stored in rc_.
     QString type_;
 };
 
 typedef QList< ParameterWrapper > ParamWrappers;
 typedef QList< QByteArray > ParamTypes;
+
+/// @brief Generate ParameterWrapper list from parameter type names as
+/// returned by @c QMetaMethod::parameterTypes().
 inline ParamWrappers GenerateParameterWrappers( const ParamTypes& pt ) {
     ParamWrappers pw;
     for( ParamTypes::const_iterator i = pt.begin(); i != pt.end(); ++i ) {
@@ -806,7 +868,7 @@ inline ParamWrappers GenerateParameterWrappers( const ParamTypes& pt ) {
     }
     return pw;
 }
-
+/// @brief Create ReturnWrapper instance from type name.
 inline ReturnWrapper GenerateReturnWrapper( const QString& typeName ) {
     return ReturnWrapper( typeName );
 }
