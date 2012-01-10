@@ -53,20 +53,20 @@ namespace qlua {
 /// Lua values read from the Lua stack. 
 ///
 /// There shall be exactly one and only one constructor per C++ type.
-/// The QLua run-time (indirectly) invokes the ArgConstructor::Create() 
+/// The QLua run-time (indirectly) invokes the QArgConstructor::Create() 
 /// method whenever the invocation of a method of a QObject derived 
 /// class instance is requested from Lua code. 
-struct ArgConstructor {
+struct QArgConstructor {
     /// Create a QGenericArgument from Lua values on the Lua stack.
     virtual QGenericArgument Create( lua_State*, int ) const = 0;
     /// Virtual destructor.
-    virtual ~ArgConstructor() {}
+    virtual ~QArgConstructor() {}
     /// Create a new instance of the current class.
-    virtual ArgConstructor* Clone() const = 0;
+    virtual QArgConstructor* Clone() const = 0;
 
 };
-/// ArgConstructor implementation for @c integer type.
-class IntArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c integer type.
+class IntQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c integer value from Lua stack to data member then create 
     /// QGenericArgument referencing the data member.
@@ -79,15 +79,15 @@ public:
         return Q_ARG( int, i_ );
     }
     /// Make copy through copy constructor.
-    IntArgConstructor* Clone() const {
-        return new IntArgConstructor( *this );
+    IntQArgConstructor* Clone() const {
+        return new IntQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable int i_;
 };
-/// ArgConstructor implementation for @c float type.
-class FloatArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c float type.
+class FloatQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c float value from Lua stack to data member then create 
     /// QGenericArgument referencing the data member. The value is converted
@@ -101,15 +101,15 @@ public:
         return Q_ARG( double, f_ );
     }
     /// Make copy through copy constructor.
-    FloatArgConstructor* Clone() const {
-        return new FloatArgConstructor( *this );
+    FloatQArgConstructor* Clone() const {
+        return new FloatQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable float f_;
 };
-/// ArgConstructor implementation for @c double type.
-class DoubleArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c double type.
+class DoubleQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c double value from Lua stack to data member then create 
     /// QGenericArgument referencing the data member.
@@ -122,15 +122,15 @@ public:
         return Q_ARG( double, d_ );
     }
     /// Make copy through copy constructor.
-    DoubleArgConstructor* Clone() const {
-        return new DoubleArgConstructor( *this );
+    DoubleQArgConstructor* Clone() const {
+        return new DoubleQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable double d_;
 };
-/// ArgConstructor implementation for @c QString type.
-class StringArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c QString type.
+class StringQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c string value from Lua stack to data member then create 
     /// QGenericArgument referencing the data member.
@@ -144,15 +144,15 @@ public:
         return Q_ARG( QString, s_ );
     }
     /// Make copy through copy constructor.
-    StringArgConstructor* Clone() const {
-        return new StringArgConstructor( *this );
+    StringQArgConstructor* Clone() const {
+        return new StringQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable QString s_;
 };
-/// ArgConstructor implementation for @c QVariantMap type.
-class VariantMapArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c QVariantMap type.
+class VariantMapQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QVariantMap
     /// data member then create QGenericArgument referencing the data member.
@@ -168,15 +168,15 @@ public:
         return Q_ARG( QVariantMap, vm_ );
     }
     /// Make copy through copy constructor.
-    VariantMapArgConstructor* Clone() const {
-        return new VariantMapArgConstructor( *this );
+    VariantMapQArgConstructor* Clone() const {
+        return new VariantMapQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable QVariantMap vm_;
 };
-/// ArgConstructor implementation for @c QVariantList type.
-class VariantListArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c QVariantList type.
+class VariantListQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QVariantList
     /// data member then create QGenericArgument referencing the data member.
@@ -192,15 +192,15 @@ public:
         return Q_ARG( QVariantList, vl_ );
     }
     /// Make copy through copy constructor.    
-    VariantListArgConstructor* Clone() const {
-        return new VariantListArgConstructor( *this );
+    VariantListQArgConstructor* Clone() const {
+        return new VariantListQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable QVariantList vl_;
 };
-/// ArgConstructor implementation for @c QObject* type.
-class ObjectStarArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c QObject* type.
+class ObjectStarQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QObject*
     /// data member then create QGenericArgument referencing the data member.
@@ -223,15 +223,15 @@ public:
         return Q_ARG( QObject*, obj_ );
     }
     /// Make copy through copy constructor.    
-    ObjectStarArgConstructor* Clone() const {
-        return new ObjectStarArgConstructor( *this );
+    ObjectStarQArgConstructor* Clone() const {
+        return new ObjectStarQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable QObject* obj_;
 };
-/// ArgConstructor implementation for @c QWidget* type.
-class WidgetStarArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c QWidget* type.
+class WidgetStarQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QWidget*
     /// data member then create QGenericArgument referencing the data member.
@@ -254,15 +254,15 @@ public:
         return Q_ARG( QWidget*, w_ );
     }
     /// Make copy through copy constructor.    
-    WidgetStarArgConstructor* Clone() const {
-        return new WidgetStarArgConstructor( *this );
+    WidgetStarQArgConstructor* Clone() const {
+        return new WidgetStarQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable QWidget* w_;
 };
-/// ArgConstructor implementation for @c void* type.
-class VoidStarArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c void* type.
+class VoidStarQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to void*
     /// data member then create QGenericArgument referencing the data member.
@@ -275,16 +275,16 @@ public:
         return Q_ARG( void*, v_ );
     }
     /// Make copy through copy constructor.    
-    VoidStarArgConstructor* Clone() const {
-        return new VoidStarArgConstructor( *this );
+    VoidStarQArgConstructor* Clone() const {
+        return new VoidStarQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable void* v_;
 };
-/// ArgConstructor implementation for @c QList<T> type.
+/// QArgConstructor implementation for @c QList<T> type.
 template< typename T >
-class ListArgConstructor : public ArgConstructor {
+class ListQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QList<T>
     /// data member then create QGenericArgument referencing the data member.
@@ -305,16 +305,16 @@ public:
         return Q_ARG( QList< T >, l_ );
     }
     /// Make copy through copy constructor.    
-    ListArgConstructor* Clone() const {
-        return new ListArgConstructor< T >( *this );
+    ListQArgConstructor* Clone() const {
+        return new ListQArgConstructor< T >( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable QList< T > l_;
 };
-/// ArgConstructor implementation for @c QVector<T> type.
+/// QArgConstructor implementation for @c QVector<T> type.
 template< typename T >
-class VectorArgConstructor : public ArgConstructor {
+class VectorQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QVector<T>
     /// data member then create QGenericArgument referencing the data member.
@@ -335,15 +335,15 @@ public:
         return Q_ARG( QVector< T >, v_ );
     }
     /// Make copy through copy constructor.    
-    VectorArgConstructor* Clone() const {
-        return new VectorArgConstructor< T >( *this );
+    VectorQArgConstructor* Clone() const {
+        return new VectorQArgConstructor< T >( *this );
     }
 private:
     /// Storage for value read from Lua stack.
     mutable QVector< T > v_;
 };
-/// ArgConstructor implementation for @c QStringList type.
-class StringListArgConstructor : public ArgConstructor {
+/// QArgConstructor implementation for @c QStringList type.
+class StringListQArgConstructor : public QArgConstructor {
 public:
     /// @brief Copy @c Lua value in table format from Lua stack to QStringList
     /// data member then create QGenericArgument referencing the data member.
@@ -356,8 +356,8 @@ public:
         return Q_ARG( QStringList, l_ );
     }
     /// Make copy through copy constructor.    
-    StringListArgConstructor* Clone() const {
-        return new StringListArgConstructor( *this );
+    StringListQArgConstructor* Clone() const {
+        return new StringListQArgConstructor( *this );
     }
 private:
     /// Storage for value read from Lua stack.
@@ -366,7 +366,7 @@ private:
 //------------------------------------------------------------------------------
 /// @brief Abstract base class for return constructors which create Lua values
 /// from C++ values.
-class ReturnConstructor {
+class LArgConstructor {
 public:
     /// Push value on Lua stack, invoked when a value must be returned
     /// from a method invoked from Lua.
@@ -375,9 +375,9 @@ public:
     /// invoked when calling a method as result of signal emission.
     virtual void Push( lua_State* , void* ) const = 0;
     /// Virtual destructor.
-    virtual ~ReturnConstructor() {}
+    virtual ~LArgConstructor() {}
     /// Return copy of object.
-    virtual ReturnConstructor* Clone() const = 0;
+    virtual LArgConstructor* Clone() const = 0;
     /// Return type of constructed data.
     virtual QMetaType::Type Type() const = 0;
     /// Return QGenericReturnArguments holding a reference to the
@@ -391,13 +391,13 @@ protected:
     /// Placeholder for returned data. 
     QGenericReturnArgument ga_; 
 };
-/// ReturnConstructor implementation for @c integer type
-class IntReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c integer type
+class IntLArgConstructor : public LArgConstructor {
 public:
-    IntReturnConstructor() {
+    IntLArgConstructor() {
         SetArg( i_ );
     }
-    IntReturnConstructor( const IntReturnConstructor& other ) : i_( other.i_ ) {
+    IntLArgConstructor( const IntLArgConstructor& other ) : i_( other.i_ ) {
         SetArg( i_ );
     }
     void Push( lua_State* L ) const {
@@ -406,20 +406,20 @@ public:
     void Push( lua_State* L, void* value ) const {
         lua_pushinteger( L, *reinterpret_cast< int* >( value ) );
     }
-    IntReturnConstructor* Clone() const {
-        return new IntReturnConstructor( *this );
+    IntLArgConstructor* Clone() const {
+        return new IntLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::Int; }
 private:
     int i_; 
 };
-/// ReturnConstructor implementation for @c double type
-class DoubleReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c double type
+class DoubleLArgConstructor : public LArgConstructor {
 public:
-    DoubleReturnConstructor() {
+    DoubleLArgConstructor() {
        SetArg( d_ ); 
     }
-    DoubleReturnConstructor( const DoubleReturnConstructor& other ) : d_( other.d_ ) {
+    DoubleLArgConstructor( const DoubleLArgConstructor& other ) : d_( other.d_ ) {
        SetArg( d_ );
     }
     void Push( lua_State* L ) const {
@@ -428,20 +428,20 @@ public:
     void Push( lua_State* L, void* value ) const {
         lua_pushnumber( L, *reinterpret_cast< double* >( value ) );
     }
-    DoubleReturnConstructor* Clone() const {
-        return new DoubleReturnConstructor( *this );
+    DoubleLArgConstructor* Clone() const {
+        return new DoubleLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::Double; }
 private:
     double d_;
 };
-/// ReturnConstructor implementation for @c float type
-class FloatReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c float type
+class FloatLArgConstructor : public LArgConstructor {
 public:
-    FloatReturnConstructor() {
+    FloatLArgConstructor() {
        SetArg( f_ ); 
     }
-    FloatReturnConstructor( const FloatReturnConstructor& other ) : f_( other.f_ ) {
+    FloatLArgConstructor( const FloatLArgConstructor& other ) : f_( other.f_ ) {
        SetArg( f_ );
     }
     void Push( lua_State* L ) const {
@@ -450,20 +450,20 @@ public:
     void Push( lua_State* L, void* value ) const {
         lua_pushnumber( L, *reinterpret_cast< float* >( value ) );
     }
-    FloatReturnConstructor* Clone() const {
-        return new FloatReturnConstructor( *this );
+    FloatLArgConstructor* Clone() const {
+        return new FloatLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::Float; }
 private:
     float f_;
 };
-/// ReturnConstructor implementation for @c QString type
-class StringReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c QString type
+class StringLArgConstructor : public LArgConstructor {
 public:
-    StringReturnConstructor() {
+    StringLArgConstructor() {
         SetArg( s_ );
     }
-    StringReturnConstructor( const StringReturnConstructor& other ) : s_( other.s_ ) {
+    StringLArgConstructor( const StringLArgConstructor& other ) : s_( other.s_ ) {
         SetArg( s_ );
     }
     void Push( lua_State* L ) const {
@@ -472,30 +472,30 @@ public:
     void Push( lua_State* L, void* value ) const {
         lua_pushstring( L, reinterpret_cast< QString* >( value )->toAscii().constData() );
     }
-    StringReturnConstructor* Clone() const {
-        return new StringReturnConstructor( *this );
+    StringLArgConstructor* Clone() const {
+        return new StringLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::QString; }
 private:
     QString s_;
 };
-/// ReturnConstructor implementation for @c void type
-class VoidReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c void type
+class VoidLArgConstructor : public LArgConstructor {
 public:
     void Push( lua_State*  ) const {}
     void Push( lua_State*, void* ) const {}
-    VoidReturnConstructor* Clone() const {
-        return new VoidReturnConstructor( *this );
+    VoidLArgConstructor* Clone() const {
+        return new VoidLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::Void; }
 };
-/// ReturnConstructor implementation for @c QVariantMap type
-class VariantMapReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c QVariantMap type
+class VariantMapLArgConstructor : public LArgConstructor {
 public:
-    VariantMapReturnConstructor() {
+    VariantMapLArgConstructor() {
         SetArg( vm_ );   
     }
-    VariantMapReturnConstructor( const VariantMapReturnConstructor& other ) : vm_( other.vm_ ) {
+    VariantMapLArgConstructor( const VariantMapLArgConstructor& other ) : vm_( other.vm_ ) {
         SetArg( vm_ );
     }
     void Push( lua_State* L ) const {
@@ -504,20 +504,20 @@ public:
     void Push( lua_State* L, void* value ) const {
         VariantMapToLuaTable( *reinterpret_cast< QVariantMap* >( value ), L );
     }
-    VariantMapReturnConstructor* Clone() const {
-        return new VariantMapReturnConstructor( *this );
+    VariantMapLArgConstructor* Clone() const {
+        return new VariantMapLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::QVariantMap; }
 private:
     QVariantMap vm_;
 };
-/// ReturnConstructor implementation for @c QVariantList type
-class VariantListReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c QVariantList type
+class VariantListLArgConstructor : public LArgConstructor {
 public:
-    VariantListReturnConstructor() {
+    VariantListLArgConstructor() {
         SetArg( vl_ );   
     }
-    VariantListReturnConstructor( const VariantListReturnConstructor& other ) : vl_( other.vl_ ) {
+    VariantListLArgConstructor( const VariantListLArgConstructor& other ) : vl_( other.vl_ ) {
         SetArg( vl_ );
     }
     void Push( lua_State* L ) const {
@@ -526,20 +526,20 @@ public:
     void Push( lua_State* L, void* value ) const {
         VariantListToLuaTable( *reinterpret_cast< QVariantList* >( value ), L );
     }
-    VariantListReturnConstructor* Clone() const {
-        return new VariantListReturnConstructor( *this );
+    VariantListLArgConstructor* Clone() const {
+        return new VariantListLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::QVariantList; }
 private:
     QVariantList vl_;
 };
-/// ReturnConstructor implementation for @c QObject* type
-class ObjectStarReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c QObject* type
+class ObjectStarLArgConstructor : public LArgConstructor {
 public:
-    ObjectStarReturnConstructor() {
+    ObjectStarLArgConstructor() {
         SetArg( obj_ );   
     }
-    ObjectStarReturnConstructor( const ObjectStarReturnConstructor& other ) : obj_( other.obj_ ) {
+    ObjectStarLArgConstructor( const ObjectStarLArgConstructor& other ) : obj_( other.obj_ ) {
         SetArg( obj_ );
     }
     void Push( lua_State* L ) const {
@@ -548,20 +548,20 @@ public:
     void Push( lua_State* L, void* value ) const {
         lua_pushlightuserdata( L,  value );
     }
-    ObjectStarReturnConstructor* Clone() const {
-        return new ObjectStarReturnConstructor( *this );
+    ObjectStarLArgConstructor* Clone() const {
+        return new ObjectStarLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::QObjectStar; }
 private:
     QObject* obj_;
 };
-/// ReturnConstructor implementation for @c QWidget* type
-class WidgetStarReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c QWidget* type
+class WidgetStarLArgConstructor : public LArgConstructor {
 public:
-    WidgetStarReturnConstructor() {
+    WidgetStarLArgConstructor() {
         SetArg( w_ );   
     }
-    WidgetStarReturnConstructor( const WidgetStarReturnConstructor& other ) : w_( other.w_ ) {
+    WidgetStarLArgConstructor( const WidgetStarLArgConstructor& other ) : w_( other.w_ ) {
         SetArg( w_ );
     }
     void Push( lua_State* L ) const {
@@ -570,20 +570,20 @@ public:
     void Push( lua_State* L, void* value ) const {
         lua_pushlightuserdata( L,  value );
     }
-    WidgetStarReturnConstructor* Clone() const {
-        return new WidgetStarReturnConstructor( *this );
+    WidgetStarLArgConstructor* Clone() const {
+        return new WidgetStarLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::QWidgetStar; }
 private:
     QWidget* w_;
 };
-/// ReturnConstructor implementation for @c void* type
-class VoidStarReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c void* type
+class VoidStarLArgConstructor : public LArgConstructor {
 public:
-    VoidStarReturnConstructor() {
+    VoidStarLArgConstructor() {
         SetArg( v_ );   
     }
-    VoidStarReturnConstructor( const VoidStarReturnConstructor& other ) : v_( other.v_ ) {
+    VoidStarLArgConstructor( const VoidStarLArgConstructor& other ) : v_( other.v_ ) {
         SetArg( v_ );
     }
     void Push( lua_State* L ) const {
@@ -592,14 +592,14 @@ public:
     void Push( lua_State* L, void* value ) const {
         lua_pushlightuserdata( L,  value );
     }
-    VoidStarReturnConstructor* Clone() const {
-        return new VoidStarReturnConstructor( *this );
+    VoidStarLArgConstructor* Clone() const {
+        return new VoidStarLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::VoidStar; }
 private:
     void* v_;
 };
-/// @brief ReturnConstructor implementation for @c QList<T> type.
+/// @brief LArgConstructor implementation for @c QList<T> type.
 ///
 /// @c T is a numeric type; supported types are:
 /// - int
@@ -607,12 +607,12 @@ private:
 /// - float
 /// - double
 template < typename T >
-class ListReturnConstructor : public ReturnConstructor {
+class ListLArgConstructor : public LArgConstructor {
 public:
-    ListReturnConstructor() {
+    ListLArgConstructor() {
         SetArg( l_ );   
     }
-    ListReturnConstructor( const ListReturnConstructor& other ) : l_( other.l_ ) {
+    ListLArgConstructor( const ListLArgConstructor& other ) : l_( other.l_ ) {
         SetArg( l_ );
     }
     void Push( lua_State* L ) const {
@@ -621,14 +621,14 @@ public:
     void Push( lua_State* L, void* value ) const {
         NumberListToLuaTable< T >( *reinterpret_cast< QList< T >* >( value ), L );
     }
-    ListReturnConstructor* Clone() const {
-        return new ListReturnConstructor( *this );
+    ListLArgConstructor* Clone() const {
+        return new ListLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::Type( QMetaType::type( TypeName< QList< T > >() ) ); }
 private:
     QList< T > l_;
 };
-/// @brief ReturnConstructor implementation for @c QVector<T> type.
+/// @brief LArgConstructor implementation for @c QVector<T> type.
 ///
 /// @c T is a numeric type; supported types are:
 ///   - @c int
@@ -636,12 +636,12 @@ private:
 ///   - @c float
 ///   - @c double
 template < typename T >
-class VectorReturnConstructor : public ReturnConstructor {
+class VectorLArgConstructor : public LArgConstructor {
 public:
-    VectorReturnConstructor() {
+    VectorLArgConstructor() {
         SetArg( v_ );   
     }
-    VectorReturnConstructor( const VectorReturnConstructor& other ) : v_( other.v_ ) {
+    VectorLArgConstructor( const VectorLArgConstructor& other ) : v_( other.v_ ) {
         SetArg( v_ );
     }
     void Push( lua_State* L ) const {
@@ -650,20 +650,20 @@ public:
     void Push( lua_State* L, void* value ) const {
         NumberVectorToLuaTable< T >( *reinterpret_cast< QVector< T >* >( value ), L );
     }
-    VectorReturnConstructor* Clone() const {
-        return new VectorReturnConstructor( *this );
+    VectorLArgConstructor* Clone() const {
+        return new VectorLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::Type( QMetaType::type( TypeName< QVector< T > >() ) ); }
 private:
     QVector< T > v_;
 };
-/// ReturnConstructor implementation for @c QStringList type
-class StringListReturnConstructor : public ReturnConstructor {
+/// LArgConstructor implementation for @c QStringList type
+class StringListLArgConstructor : public LArgConstructor {
 public:
-    StringListReturnConstructor() {
+    StringListLArgConstructor() {
         SetArg( l_ );   
     }
-    StringListReturnConstructor( const StringListReturnConstructor& other ) : l_( other.l_ ) {
+    StringListLArgConstructor( const StringListLArgConstructor& other ) : l_( other.l_ ) {
         SetArg( l_ );
     }
     void Push( lua_State* L ) const {
@@ -672,8 +672,8 @@ public:
     void Push( lua_State* L, void* value ) const {
         StringListToLuaTable( *reinterpret_cast< QStringList* >( value ), L );
     }
-    StringListReturnConstructor* Clone() const {
-        return new StringListReturnConstructor( *this );
+    StringListLArgConstructor* Clone() const {
+        return new StringListLArgConstructor( *this );
     }
     QMetaType::Type Type() const { return QMetaType::Type( QMetaType::type( TypeName< QList< QString > >() ) ); }
 private:
@@ -684,75 +684,75 @@ private:
 /// @brief Wrapper for parameters in a QObject method invocation.
 ///
 /// Whenever a new QObject is added to the Lua context, the signature of each
-/// method is translated to an index and a list of ParameterWrapper objects 
+/// method is translated to an index and a list of QArgWrapper objects 
 /// stored inside a LuaContext instance.
 /// At invocation time the proper method is invoked through a call to
-/// @c QMetaMethod::invoke passing the arguments returned by the ParameterWrapper::Arg
+/// @c QMetaMethod::invoke passing the arguments returned by the QArgWrapper::Arg
 /// method invoked on each parameter in the argument list.
-/// ParameterWrapper stores an instance of ArgConstructor used to create a
+/// QArgWrapper stores an instance of QArgConstructor used to create a
 /// QGenericArgument from values on the Lua stack.
-class ParameterWrapper {
+class QArgWrapper {
 public:
-	/// @brief Default constructor.
-    ParameterWrapper() : ac_( 0 ) {}
-	/// Copy constructor: Clone ArgConstructor instance.
-	ParameterWrapper( const ParameterWrapper& other ) : ac_( 0 ) {
+    /// @brief Default constructor.
+    QArgWrapper() : ac_( 0 ) {}
+    /// Copy constructor: Clone QArgConstructor instance.
+    QArgWrapper( const QArgWrapper& other ) : ac_( 0 ) {
         if( other.ac_ ) ac_ = other.ac_->Clone();
     }
-	/// @brief Construct instance from type name. Creates proper instance of
-	/// inner ArgConstructor from type info.
-    ParameterWrapper( const QString& type ) : ac_( 0 ) {
+    /// @brief Construct instance from type name. Creates proper instance of
+    /// inner QArgConstructor from type info.
+    QArgWrapper( const QString& type ) : ac_( 0 ) {
         if( type == QMetaType::typeName( QMetaType::Int ) ) {
-            ac_ = new IntArgConstructor;
+            ac_ = new IntQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::Double ) ) {
-            ac_ = new DoubleArgConstructor;
+            ac_ = new DoubleQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::Float ) ) {
-            ac_ = new FloatArgConstructor;
+            ac_ = new FloatQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QString ) ) {
-            ac_ = new StringArgConstructor;
+            ac_ = new StringQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QVariantMap ) ) {
-            ac_ = new VariantMapArgConstructor;
+            ac_ = new VariantMapQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QVariantList ) ) {
-            ac_ = new VariantListArgConstructor;
+            ac_ = new VariantListQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QObjectStar ) ) {
-            ac_ = new ObjectStarArgConstructor;
+            ac_ = new ObjectStarQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QStringList ) ) {
-            ac_ = new StringListArgConstructor;
+            ac_ = new StringListQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QWidgetStar ) ) {
-            ac_ = new WidgetStarArgConstructor;
+            ac_ = new WidgetStarQArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::VoidStar ) ) {
-            ac_ = new VoidStarArgConstructor;
+            ac_ = new VoidStarQArgConstructor;
         } else if( type == QLUA_LIST_FLOAT64 ) {
-            ac_ = new ListArgConstructor< double >;
+            ac_ = new ListQArgConstructor< double >;
         } else if( type == QLUA_LIST_FLOAT32 ) {
-            ac_ = new ListArgConstructor< float >;
+            ac_ = new ListQArgConstructor< float >;
         } else if( type == QLUA_LIST_INT ) {
-            ac_ = new ListArgConstructor< int >;
+            ac_ = new ListQArgConstructor< int >;
         } else if( type == QLUA_LIST_SHORT ) {
-            ac_ = new ListArgConstructor< short >;
+            ac_ = new ListQArgConstructor< short >;
         } else if( type == QLUA_VECTOR_FLOAT64 ) {
-            ac_ = new VectorArgConstructor< double >;
+            ac_ = new VectorQArgConstructor< double >;
         } else if( type == QLUA_VECTOR_FLOAT32 ) {
-            ac_ = new VectorArgConstructor< float >;
+            ac_ = new VectorQArgConstructor< float >;
         } else if( type == QLUA_VECTOR_INT ) {
-            ac_ = new VectorArgConstructor< int >;
+            ac_ = new VectorQArgConstructor< int >;
         } else if( type == QLUA_VECTOR_SHORT ) {
-            ac_ = new VectorArgConstructor< short >;
+            ac_ = new VectorQArgConstructor< short >;
         } else throw std::logic_error( ( "Type " + type + " unknown" ).toStdString() );
     }
-	/// @brief Return QGenericArgument instance created from values on the Lua stack.
-	///
-	/// Internally it calls ArgConstructor::Create to generate QGenericArguments from
-	/// Lua values.
+    /// @brief Return QGenericArgument instance created from values on the Lua stack.
+    ///
+    /// Internally it calls QArgConstructor::Create to generate QGenericArguments from
+    /// Lua values.
     QGenericArgument Arg( lua_State* L, int idx ) const {
         return ac_ ? ac_->Create( L, idx ) : QGenericArgument();
     }
-	/// @brief Destructor; delete ArgConstructor instance.
-    ~ParameterWrapper() { delete ac_; }
+    /// @brief Destructor; delete QArgConstructor instance.
+    ~QArgWrapper() { delete ac_; }
 private:
-	/// Instance of ArgConstructor created from type information at construction
-	/// time.
-    ArgConstructor* ac_;    
+    /// Instance of QArgConstructor created from type information at construction
+    /// time.
+    QArgConstructor* ac_;    
 };
 
 /// @brief Wrapper for objects returned from QObject method invocation or passes
@@ -762,115 +762,115 @@ private:
 /// values from method invocations and translate the parameters received from
 /// a signal to Lua values whenever a Lua callback invocation is triggered by
 /// an emitted signal.
-class ReturnWrapper {
+class LArgWrapper {
 public:
-	///@brief Default constructor.
-    ReturnWrapper() : rc_( 0 ) {}
-	///@brief Copy constructor: Clones the internal Return constructor instance.
-	ReturnWrapper( const ReturnWrapper& other ) : rc_( 0 ), type_( other.type_ ) {
+    ///@brief Default constructor.
+    LArgWrapper() : rc_( 0 ) {}
+    ///@brief Copy constructor: Clones the internal Return constructor instance.
+    LArgWrapper( const LArgWrapper& other ) : rc_( 0 ), type_( other.type_ ) {
         if( other.rc_ ) rc_ = other.rc_->Clone();
     }
-	///@brief Create instance from type name.
-	///
-	///An instance of ReturnConstructor is created from the passes type name.
-    ReturnWrapper( const QString& type ) : rc_( 0 ), type_( type ) {
+    ///@brief Create instance from type name.
+    ///
+    ///An instance of LArgConstructor is created from the passes type name.
+    LArgWrapper( const QString& type ) : rc_( 0 ), type_( type ) {
         if( type_ == QMetaType::typeName( QMetaType::Int ) ) {
-            rc_ = new IntReturnConstructor;
+            rc_ = new IntLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::Double ) ) {
-            rc_ = new DoubleReturnConstructor;
+            rc_ = new DoubleLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::Float ) ) {
-            rc_ = new FloatReturnConstructor;
+            rc_ = new FloatLArgConstructor;
         } else if( type_ == QMetaType::typeName( QMetaType::QString ) ) {
-            rc_ = new StringReturnConstructor;
+            rc_ = new StringLArgConstructor;
         } else if( type_ == QMetaType::typeName( QMetaType::QVariantMap ) ) {
-            rc_ = new VariantMapReturnConstructor;
+            rc_ = new VariantMapLArgConstructor;
         } else if( type_ == QMetaType::typeName( QMetaType::QVariantList ) ) {
-            rc_ = new VariantListReturnConstructor;
+            rc_ = new VariantListLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QObjectStar ) ) {
-            rc_ = new ObjectStarReturnConstructor;
+            rc_ = new ObjectStarLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QStringList ) ) {
-            rc_ = new StringListReturnConstructor;
+            rc_ = new StringListLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QWidgetStar ) ) {
-            rc_ = new WidgetStarReturnConstructor;
+            rc_ = new WidgetStarLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::VoidStar ) ) {
-            rc_ = new VoidStarReturnConstructor;
+            rc_ = new VoidStarLArgConstructor;
         } else if( type == QLUA_LIST_FLOAT64 ) {
-            rc_ = new ListReturnConstructor< double >;
+            rc_ = new ListLArgConstructor< double >;
         } else if( type == QLUA_LIST_FLOAT32 ) {
-            rc_ = new ListReturnConstructor< float >;
+            rc_ = new ListLArgConstructor< float >;
         } else if( type == QLUA_LIST_INT ) {
-            rc_ = new ListReturnConstructor< int >;
+            rc_ = new ListLArgConstructor< int >;
         } else if( type == QLUA_LIST_SHORT ) {
-            rc_ = new ListReturnConstructor< short >;
+            rc_ = new ListLArgConstructor< short >;
         } else if( type == QLUA_VECTOR_FLOAT64 ) {
-            rc_ = new VectorReturnConstructor< double >;
+            rc_ = new VectorLArgConstructor< double >;
         } else if( type == QLUA_VECTOR_FLOAT32 ) {
-            rc_ = new VectorReturnConstructor< float >;
+            rc_ = new VectorLArgConstructor< float >;
         } else if( type == QLUA_VECTOR_INT ) {
-            rc_ = new VectorReturnConstructor< int >;
+            rc_ = new VectorLArgConstructor< int >;
         } else if( type == QLUA_VECTOR_SHORT ) {
-            rc_ = new VectorReturnConstructor< short >;
-        } else if( type_.isEmpty() ) rc_ = new VoidReturnConstructor;
+            rc_ = new VectorLArgConstructor< short >;
+        } else if( type_.isEmpty() ) rc_ = new VoidLArgConstructor;
         else throw std::logic_error( ( "Type " + type + " unknown" ).toStdString() );
     }
-	/// @brief Push values stored in the inner ReturnConstructor instance on the
-	/// Lua stack.
-	///
-	/// This is the method invoked to return values from a QObject method invocation.
+    /// @brief Push values stored in the inner LArgConstructor instance on the
+    /// Lua stack.
+    ///
+    /// This is the method invoked to return values from a QObject method invocation.
     void Push( lua_State* L ) const {
         rc_->Push( L );
     }
-	/// @brief Push values stored in passed memory location on the Lua stack.
-	///
-	/// This is the method invoked when a Lua callback is called through
-	/// @c QObject::qt_metacall (e.g. through a triggered signal). When Lua 
-	/// functions are called through @c qt_metacall the list of arguments is stored 
-	/// inside an array of void pointers; each parameter must therefore be converted to 
-	/// the proper C++ type first and then translated to a Lua values.
-	/// @param L Lua state
-	/// @param value memory location to read from
+    /// @brief Push values stored in passed memory location on the Lua stack.
+    ///
+    /// This is the method invoked when a Lua callback is called through
+    /// @c QObject::qt_metacall (e.g. through a triggered signal). When Lua 
+    /// functions are called through @c qt_metacall the list of arguments is stored 
+    /// inside an array of void pointers; each parameter must therefore be converted to 
+    /// the proper C++ type first and then translated to a Lua values.
+    /// @param L Lua state
+    /// @param value memory location to read from
     void Push( lua_State* L, void* value ) const {
         rc_->Push( L, value ); // called from the callback dispatcher method
     }
-	/// @brief Return the location where the return argument passed to a method
-	/// invocation shall be stored.
-	///
-	/// This method is invoked to provide QMetaMethod::invoke with the location
-	/// where the return value will be stored, which is the storage space provided
-	/// by the ReturnConstructor instance stored in this object.
-	/// After the method invocation returns the value in the ReturnConstructor instance
-	/// is pushed on the Lua stack through a call to ReturnConstructor::Push(lua_State*).
+    /// @brief Return the location where the return argument passed to a method
+    /// invocation shall be stored.
+    ///
+    /// This method is invoked to provide QMetaMethod::invoke with the location
+    /// where the return value will be stored, which is the storage space provided
+    /// by the LArgConstructor instance stored in instances of this class.
+    /// After the method invocation returns the value in the LArgConstructor instance
+    /// is pushed on the Lua stack through a call to LArgConstructor::Push(lua_State*).
     QGenericReturnArgument Arg() const { return rc_->Argument(); }
-	/// Type name.
+    /// Type name.
     const QString& Type() const { 
         return type_;
     }
-	/// Meta type.
+    /// Meta type.
     QMetaType::Type MetaType() const { return rc_->Type(); }
-	/// Delete ReturnConstructor instance.
-    ~ReturnWrapper() { delete rc_; }
+    /// Delete LArgConstructor instance.
+    ~LArgWrapper() { delete rc_; }
 private:
-	/// ReturnConstructor instance created at construction time.
-    ReturnConstructor* rc_;
-	/// Qt type name of data stored in rc_.
+    /// LArgConstructor instance created at construction time.
+    LArgConstructor* rc_;
+    /// Qt type name of data stored in rc_.
     QString type_;
 };
 
-typedef QList< ParameterWrapper > ParamWrappers;
-typedef QList< QByteArray > ParamTypes;
+typedef QList< QArgWrapper > QArgWrappers;
+typedef QList< QByteArray > ArgumentTypes;
 
-/// @brief Generate ParameterWrapper list from parameter type names as
+/// @brief Generate QArgWrapper list from parameter type names as
 /// returned by @c QMetaMethod::parameterTypes().
-inline ParamWrappers GenerateParameterWrappers( const ParamTypes& pt ) {
-    ParamWrappers pw;
-    for( ParamTypes::const_iterator i = pt.begin(); i != pt.end(); ++i ) {
-        pw.push_back( ParameterWrapper( *i ) );
+inline QArgWrappers GenerateQArgWrappers( const ArgumentTypes& at ) {
+    QArgWrappers aw;
+    for( ArgumentTypes::const_iterator i = at.begin(); i != at.end(); ++i ) {
+        aw.push_back( QArgWrapper( *i ) );
     }
-    return pw;
+    return aw;
 }
-/// @brief Create ReturnWrapper instance from type name.
-inline ReturnWrapper GenerateReturnWrapper( const QString& typeName ) {
-    return ReturnWrapper( typeName );
+/// @brief Create LArgWrapper instance from type name.
+inline LArgWrapper GenerateLArgWrapper( const QString& typeName ) {
+    return LArgWrapper( typeName );
 }
 
 }

@@ -68,8 +68,8 @@ void LuaContext::AddQObject( QObject* obj,
         const QString returnType = mm.typeName();
         objMethods_[ obj ][ name ].push_back( Method( obj,
                                     mm, 
-                                    GenerateParameterWrappers( params ),
-                                    GenerateReturnWrapper( returnType ) ) );
+                                    GenerateQArgWrappers( params ),
+                                    GenerateLArgWrapper( returnType ) ) );
         if( objMethods_[ obj ][ name ].size() == 1 ) {
             lua_pushstring( L_, name.toAscii().constData() );
             lua_pushlightuserdata( L_, &( objMethods_[ obj ][ name ] ) );
@@ -174,10 +174,10 @@ int LuaContext::QtConnect( lua_State* L ) {
     QMetaMethod mm = mo->method( signalIndex );
 
     QList< QByteArray > params = mm.parameterTypes();
-    QList< ReturnWrapper  > types;
+    QList< LArgWrapper  > types;
     for( QList< QByteArray >::const_iterator i = params.begin();
          i != params.end(); ++i ) {
-             types.push_back( ReturnWrapper( i->constData() ) );
+             types.push_back( LArgWrapper( i->constData() ) );
     }
     if( lua_isfunction( L, 3 ) ) {
         //push lua callback onto top of stack
@@ -326,7 +326,7 @@ int LuaContext::InvokeMethod( lua_State *L ) {
     int idx = -1;
     const Method* mi = 0;
     for( Methods::const_iterator i = m.begin(); i != m.end(); ++i ) {
-        if( i->paramWrappers_.size() == numArgs ) {
+        if( i->argumentWrappers_.size() == numArgs ) {
             mi = &( *i );
             break;
         }
@@ -394,12 +394,12 @@ int LuaContext::Invoke1( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -415,14 +415,14 @@ int LuaContext::Invoke2( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -438,16 +438,16 @@ int LuaContext::Invoke3( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -463,18 +463,18 @@ int LuaContext::Invoke4( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -490,20 +490,20 @@ int LuaContext::Invoke5( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -519,22 +519,22 @@ int LuaContext::Invoke6( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L, 6 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L, 6 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L, 6 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L, 6 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -550,24 +550,24 @@ int LuaContext::Invoke7( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L, 6 ),
-                                     mi->paramWrappers_[ 6 ].Arg( L, 7 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L, 6 ),
+                                     mi->argumentWrappers_[ 6 ].Arg( L, 7 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L, 6 ),
-                                     mi->paramWrappers_[ 6 ].Arg( L, 7 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L, 6 ),
+                                     mi->argumentWrappers_[ 6 ].Arg( L, 7 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -583,26 +583,26 @@ int LuaContext::Invoke8( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L, 6 ),
-                                     mi->paramWrappers_[ 6 ].Arg( L, 7 ),
-                                     mi->paramWrappers_[ 7 ].Arg( L, 8 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L, 6 ),
+                                     mi->argumentWrappers_[ 6 ].Arg( L, 7 ),
+                                     mi->argumentWrappers_[ 7 ].Arg( L, 8 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L, 6 ),
-                                     mi->paramWrappers_[ 6 ].Arg( L, 7 ),
-                                     mi->paramWrappers_[ 7 ].Arg( L, 8 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L, 6 ),
+                                     mi->argumentWrappers_[ 6 ].Arg( L, 7 ),
+                                     mi->argumentWrappers_[ 7 ].Arg( L, 8 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -618,28 +618,28 @@ int LuaContext::Invoke9( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L, 6 ),
-                                     mi->paramWrappers_[ 6 ].Arg( L, 7 ),
-                                     mi->paramWrappers_[ 7 ].Arg( L, 8 ),
-                                     mi->paramWrappers_[ 8 ].Arg( L, 9 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L, 6 ),
+                                     mi->argumentWrappers_[ 6 ].Arg( L, 7 ),
+                                     mi->argumentWrappers_[ 7 ].Arg( L, 8 ),
+                                     mi->argumentWrappers_[ 8 ].Arg( L, 9 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L, 1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L, 2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L, 3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L, 4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L, 5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L, 6 ),
-                                     mi->paramWrappers_[ 6 ].Arg( L, 7 ),
-                                     mi->paramWrappers_[ 7 ].Arg( L, 8 ),
-                                     mi->paramWrappers_[ 8 ].Arg( L, 9 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L, 1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L, 2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L, 3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L, 4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L, 5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L, 6 ),
+                                     mi->argumentWrappers_[ 6 ].Arg( L, 7 ),
+                                     mi->argumentWrappers_[ 7 ].Arg( L, 8 ),
+                                     mi->argumentWrappers_[ 8 ].Arg( L, 9 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );
@@ -655,30 +655,30 @@ int LuaContext::Invoke10( const Method* mi, LuaContext& lc ) {
     lua_State* L = lc.LuaState();
     if( mi->returnWrapper_.Type().isEmpty() ) {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
-                                     mi->paramWrappers_[ 0 ].Arg( L,  1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L,  2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L,  3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L,  4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L,  5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L,  6 ),
-                                     mi->paramWrappers_[ 6 ].Arg( L,  7 ),
-                                     mi->paramWrappers_[ 7 ].Arg( L,  8 ),
-                                     mi->paramWrappers_[ 8 ].Arg( L,  9 ),
-                                     mi->paramWrappers_[ 9 ].Arg( L, 10 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L,  1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L,  2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L,  3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L,  4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L,  5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L,  6 ),
+                                     mi->argumentWrappers_[ 6 ].Arg( L,  7 ),
+                                     mi->argumentWrappers_[ 7 ].Arg( L,  8 ),
+                                     mi->argumentWrappers_[ 8 ].Arg( L,  9 ),
+                                     mi->argumentWrappers_[ 9 ].Arg( L, 10 ) );
         if( ok ) return 0;
     } else {
         ok = mi->metaMethod_.invoke( mi->obj_, Qt::DirectConnection,
                                      mi->returnWrapper_.Arg(), //passes the location (void*) where return data will be stored
-                                     mi->paramWrappers_[ 0 ].Arg( L,  1 ),
-                                     mi->paramWrappers_[ 1 ].Arg( L,  2 ),
-                                     mi->paramWrappers_[ 2 ].Arg( L,  3 ),
-                                     mi->paramWrappers_[ 3 ].Arg( L,  4 ),
-                                     mi->paramWrappers_[ 4 ].Arg( L,  5 ),
-                                     mi->paramWrappers_[ 5 ].Arg( L,  6 ),
-                                     mi->paramWrappers_[ 6 ].Arg( L,  7 ),
-                                     mi->paramWrappers_[ 7 ].Arg( L,  8 ),
-                                     mi->paramWrappers_[ 8 ].Arg( L,  9 ),
-                                     mi->paramWrappers_[ 9 ].Arg( L, 10 ) );
+                                     mi->argumentWrappers_[ 0 ].Arg( L,  1 ),
+                                     mi->argumentWrappers_[ 1 ].Arg( L,  2 ),
+                                     mi->argumentWrappers_[ 2 ].Arg( L,  3 ),
+                                     mi->argumentWrappers_[ 3 ].Arg( L,  4 ),
+                                     mi->argumentWrappers_[ 4 ].Arg( L,  5 ),
+                                     mi->argumentWrappers_[ 5 ].Arg( L,  6 ),
+                                     mi->argumentWrappers_[ 6 ].Arg( L,  7 ),
+                                     mi->argumentWrappers_[ 7 ].Arg( L,  8 ),
+                                     mi->argumentWrappers_[ 8 ].Arg( L,  9 ),
+                                     mi->argumentWrappers_[ 9 ].Arg( L, 10 ) );
         if( ok ) {
             mi->returnWrapper_.Push( L );
             HandleReturnValue( lc, mi->returnWrapper_.MetaType() );

@@ -33,7 +33,7 @@ namespace qlua {
 
 class LuaContext;
 
-typedef QList< ReturnWrapper  > CBackParameterTypes;
+typedef QList< LArgWrapper  > CBackParameterTypes;
 
 void PushLuaValue( LuaContext* lc, QMetaType::Type type, void* arg );
 

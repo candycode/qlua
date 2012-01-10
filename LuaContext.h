@@ -66,10 +66,10 @@ class LuaContext {
     struct Method {
         QObject* obj_;
         QMetaMethod metaMethod_;
-        ParamWrappers paramWrappers_;
-        ReturnWrapper returnWrapper_;
-        Method( QObject* obj, const QMetaMethod& mm, const ParamWrappers& pw, const ReturnWrapper& rw ) :
-        obj_( obj ), metaMethod_( mm ), paramWrappers_( pw ), returnWrapper_( rw ) {}
+        QArgWrappers argumentWrappers_;
+        LArgWrapper returnWrapper_;
+        Method( QObject* obj, const QMetaMethod& mm, const QArgWrappers& pw, const LArgWrapper& rw ) :
+        obj_( obj ), metaMethod_( mm ), argumentWrappers_( pw ), returnWrapper_( rw ) {}
     };
 public:
     enum ObjectDeleteMode { QOBJ_NO_DELETE, QOBJ_IMMEDIATE_DELETE, QOBJ_DELETE_LATER };
