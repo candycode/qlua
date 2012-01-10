@@ -40,12 +40,14 @@ void LuaContext::AddQObject( QObject* obj,
                              const QList< QMetaMethod::MethodType >& methodTypes ) {
     
     // if object already present push its associated table on the stack
+    // and return
     if( cache && objRefs_.contains( obj ) ) {
         lua_rawgeti( L_, LUA_REGISTRYINDEX, objRefs_[ obj ] );
         if( tableName ) lua_setglobal( L_, tableName ); 
         return;
     }
     
+    // create sets to filter methods/types
     QSet< QString > mn;
     QSet< QMetaMethod::MethodType > mt;
     foreach( QString s, methodNames ) {
@@ -54,8 +56,10 @@ void LuaContext::AddQObject( QObject* obj,
     foreach( QMetaMethod::MethodType t, methodTypes ) {
         mt.insert( t );
     }
+    // create Lua table wrapping QObject: methods and property are added to
+    // this table together with a reference to the QObject instance
     lua_newtable( L_ );
-    //methods
+    // methods
     const QMetaObject* mo = obj->metaObject();
     for( int i = 0; i != mo->methodCount(); ++i ) {
         QMetaMethod mm = mo->method( i );
@@ -78,6 +82,9 @@ void LuaContext::AddQObject( QObject* obj,
             lua_rawset( L_, -3 );
         }                               
     }
+    // reference to QObject added as userdata (pointer to pointer to QObject);
+    // note that it is not possible to use light userdata because it is 
+    // not garbage collected
     lua_pushstring( L_, "qobject__" );
     QObject** pObj = reinterpret_cast< QObject** >( lua_newuserdata( L_, sizeof( QObject* ) ) );
     *pObj = obj;
@@ -92,23 +99,28 @@ void LuaContext::AddQObject( QObject* obj,
     lua_setmetatable( L_, -2 ); // set metatable QObject table
     lua_settable( L_, -3 );
 
-    //properties
+    // properties
     for( int i = 0; i != mo->propertyCount(); ++i ) {
         QMetaProperty mp = mo->property( i );
         lua_pushstring( L_, mp.name() );
         VariantToLuaValue( mp.read( obj ), L_ );
         lua_rawset( L_, -3 );
     }
+    // if caching enabled create Lua reference for QObject table and
+    // add it to object->reference table
     if( cache ) {
         lua_pushvalue( L_, -1 );
         objRefs_[ obj ] = luaL_ref( L_, LUA_REGISTRYINDEX );
     }
+    // if Lua table name not-null add object as global with given name
     if( tableName ) lua_setglobal( L_, tableName );
 }
 
 //------------------------------------------------------------------------------
 void LuaContext::RemoveObject( QObject* obj ) {
+    // remove object from database of registered objects
     objMethods_.remove( obj );
+    // if an associated Lua reference exists remove reference
     if( objRefs_.contains( obj ) ) {
         luaL_unref( L_, LUA_REGISTRYINDEX, objRefs_[ obj ] );
         objRefs_.remove( obj );
@@ -116,7 +128,9 @@ void LuaContext::RemoveObject( QObject* obj ) {
 }
     
 //------------------------------------------------------------------------------
+// Invoked by Lua's __gc
 int LuaContext::DeleteObject( lua_State* L ) {
+    // upvalues in closure: pointer to QObject, pointer to LuaContext, delete mode
     QObject* obj = reinterpret_cast< QObject* >( lua_touserdata( L, lua_upvalueindex( 1 ) ) );
     LuaContext* lc = reinterpret_cast< LuaContext* >( lua_touserdata( L, lua_upvalueindex( 2 ) ) );
     ObjectDeleteMode dm = ObjectDeleteMode( lua_tointeger( L, lua_upvalueindex( 3 ) ) );
@@ -126,6 +140,9 @@ int LuaContext::DeleteObject( lua_State* L ) {
     return 0;
 }
 
+//------------------------------------------------------------------------------
+// Register additional types not automatically available through Qt's mata-type
+// environment
 void LuaContext::RegisterTypes() {
     qRegisterMetaType< QList< double > >( QLUA_LIST_FLOAT64 );
     qRegisterMetaType< QList< float > > ( QLUA_LIST_FLOAT32 );
@@ -140,6 +157,7 @@ void LuaContext::RegisterTypes() {
 
 //------------------------------------------------------------------------------
 int LuaContext::QtConnect( lua_State* L ) {
+    // extract LuaContext from closure 
     LuaContext& lc = *reinterpret_cast< LuaContext* >( lua_touserdata( L, lua_upvalueindex( 1 ) ) );
     if( lua_gettop( L ) != 3 && lua_gettop( L ) != 4  ) {
         RaiseLuaError( L, "qlua.connect: Three or four parameters required" );
@@ -150,6 +168,7 @@ int LuaContext::QtConnect( lua_State* L ) {
         return 0;
     }
 
+    // get pointer to QObject through either Lua table or direct access to pointer data
     QObject* obj = 0;
     if( lua_istable( L, 1 ) ) {
         lua_pushstring( L, "qobject__" );
@@ -161,10 +180,10 @@ int LuaContext::QtConnect( lua_State* L ) {
         obj = *reinterpret_cast< QObject** >( lua_touserdata( L, -1 ) );
     } else obj = reinterpret_cast< QObject* >( lua_touserdata( L, 1 ) );
     
+    // signal signature from Lua
     const char* signal = lua_tostring( L, 2 );
     //extract signal arguments info
     const QMetaObject* mo = obj->metaObject();
-    
     QString signalSignature = QMetaObject::normalizedSignature( signal );
     const int signalIndex = mo->indexOfSignal( signalSignature.toAscii().constData() );
     if( signalIndex < 0 ) {
@@ -172,18 +191,27 @@ int LuaContext::QtConnect( lua_State* L ) {
         return 0;
     } 
     QMetaMethod mm = mo->method( signalIndex );
-
+    //extract signal's arguments info
     QList< QByteArray > params = mm.parameterTypes();
-    QList< LArgWrapper  > types;
+    QList< LArgWrapper > types;
     for( QList< QByteArray >::const_iterator i = params.begin();
          i != params.end(); ++i ) {
              types.push_back( LArgWrapper( i->constData() ) );
     }
+    // if Lua function create reference associated with function
+    // and connect signal to dynamic method which will invoke the
+    // passed function when the signal is triggered;
+    // note that the current implementation creates a new reference
+    // each time a function is connected to a signal: connecting 
+    // twice the same function will cause the function to be called
+    // twice whenever a signal is emitted
     if( lua_isfunction( L, 3 ) ) {
-        //push lua callback onto top of stack
+        //push lua callback on top of stack
         lua_pushvalue( L, 3 );
         const int luaRef = luaL_ref( L, LUA_REGISTRYINDEX );
-        lc.dispatcher_.Connect( obj, signalIndex, types, luaRef ); 
+        lc.dispatcher_.Connect( obj, signalIndex, types, luaRef );
+    // else if light user data interpret it as QObject pointer and
+    // use the standard QObject::connect function 
     } else if( lua_islightuserdata( L, 3 ) ) {
         if( lua_gettop( L ) < 4 || !lua_isstring( L, 4 ) ) {
             RaiseLuaError( L, "qlua.connect: missing target method" );
@@ -200,6 +228,7 @@ int LuaContext::QtConnect( lua_State* L ) {
         }
         QMetaObject::connect( obj, signalIndex, targetObj, targetMethodIdx );
         return 0;
+    // else if table extract QObject pointer and call QObject::connect 
     } else if( lua_istable( L, 3 ) ) {
         if( lua_gettop( L ) < 4 || !lua_isstring( L, 4 ) ) {
             lua_pushstring( L, "qlua.connect: missing target method" );
@@ -256,7 +285,6 @@ int LuaContext::QtDisconnect( lua_State* L ) {
     //extract signal arguments info
     const QMetaObject* mo = obj->metaObject();
     QString signalSignature = QMetaObject::normalizedSignature( signal );
-
 
     const int signalIndex = mo->indexOfSignal( signalSignature.toAscii().constData() );
     if( signalIndex < 0 ) {

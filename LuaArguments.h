@@ -368,10 +368,10 @@ private:
 /// from C++ values.
 class LArgConstructor {
 public:
-    /// Push value on Lua stack, invoked when a value must be returned
+    /// @brief Push value on Lua stack, invoked when a value must be returned
     /// from a method invoked from Lua.
     virtual void Push( lua_State* ) const = 0;
-    /// Push value read from a specific memory location on Lua stack,
+    /// @brief Push value read from a specific memory location on Lua stack,
     /// invoked when calling a method as result of signal emission.
     virtual void Push( lua_State* , void* ) const = 0;
     /// Virtual destructor.
@@ -380,9 +380,16 @@ public:
     virtual LArgConstructor* Clone() const = 0;
     /// Return type of constructed data.
     virtual QMetaType::Type Type() const = 0;
-    /// Return QGenericReturnArguments holding a reference to the
+    /// @briefReturn QGenericReturnArguments holding a reference to the
     /// memory location where the returned value is stored.
     QGenericReturnArgument Argument() const { return ga_; }
+    /// @brief Return @c true if type is a pointer to a QObject-derived object.
+    ///
+    /// This is required to have the QLua run-time add the passed QObject into
+    /// the Lua context. The other option is to have LArgConstructors::Push
+    /// receive a reference to a LuaContext which introduces a two-way
+    /// dependency between LArgConstructor and LuaContext.
+    virtual bool IsQObjectPtr() const { return false; }
 protected:
     /// Creates return argument of the proper type.
     template < typename T > void SetArg( T& arg ) {
@@ -551,6 +558,7 @@ public:
     ObjectStarLArgConstructor* Clone() const {
         return new ObjectStarLArgConstructor( *this );
     }
+    bool IsQObjectPtr() const { return true; }
     QMetaType::Type Type() const { return QMetaType::QObjectStar; }
 private:
     QObject* obj_;
@@ -573,6 +581,7 @@ public:
     WidgetStarLArgConstructor* Clone() const {
         return new WidgetStarLArgConstructor( *this );
     }
+    bool IsQObjectPtr() const { return true; }
     QMetaType::Type Type() const { return QMetaType::QWidgetStar; }
 private:
     QWidget* w_;

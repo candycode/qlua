@@ -40,6 +40,10 @@ bool LuaCallbackDispatcher::Connect( QObject *obj,
                                      int signalIdx,
                                      const CBackParameterTypes& paramTypes,
                                      LuaCBackRef luaCBackRef ) {
+    // check if Lua function reference already stored in database;
+    // if not create a new 'dynamic method' and map function reference
+    // to the newly created method;
+    // the index of a new method is the metod array size
     int methodIdx = cbackToMethodIndex_.value( luaCBackRef, -1 );
     if( methodIdx < 0 ) {
         methodIdx = luaCBackMethods_.size();
@@ -47,24 +51,33 @@ bool LuaCallbackDispatcher::Connect( QObject *obj,
         luaCBackMethods_.push_back(
             new LuaCBackMethod( lc_, paramTypes, luaCBackRef ) );
     }
+    // connect signal to method in method array
     return QMetaObject::connect( obj, signalIdx, this, methodIdx + metaObject()->methodCount() );
 }
 //------------------------------------------------------------------------------
-// precondition: value referenced object (i.e. function must already be on the stack at index idx )
 bool LuaCallbackDispatcher::Disconnect( QObject *obj, 
                                         int signalIdx,
                                         int cbackStackIndex ) {
+    if( !lua_isfunction( lc_->LuaState(), cbackStackIndex ) ) {
+        RaiseLuaError( "No function to disconnect found" );
+        return false;
+    }
     int m = 0;
     bool ok = true;
+    // iterate over callback methods, each method is associated with
+    // one and only one Lua function
     for( QList< LuaCBackMethod* >::iterator i = luaCBackMethods_.begin();
           i != luaCBackMethods_.end(); ++i, ++m ) {
+         // get lua function associated with lua reference
          lua_rawgeti( lc_->LuaState(), LUA_REGISTRYINDEX, ( *i )->CBackRef() );
          if( cbackStackIndex < 0 ) --cbackStackIndex;
+         // compare function with Lua function to disconnect
 #if LUA_VERSION_NUM > 501
          const bool same = lua_compare( lc_->LuaState(), cbackStackIndex, -1, LUA_OPEQ );
 #else
          const bool same = lua_equal( lc_->LuaState(), cbackStackIndex, -1 );
 #endif
+         // if match disconnect signal from method and remove reference
          if( same ) {
              ok = ok && QMetaObject::disconnect( obj, signalIdx, this, m + metaObject()->methodCount() );
              luaL_unref( lc_->LuaState(), LUA_REGISTRYINDEX, lua_tointeger( lc_->LuaState(), -1 ) );
@@ -83,24 +96,24 @@ int LuaCallbackDispatcher::qt_metacall( QMetaObject::Call invoke, MethodId metho
 //------------------------------------------------------------------------------
 void LuaCBackMethod::Invoke( void **arguments ) {
     lua_rawgeti( lc_->LuaState(), LUA_REGISTRYINDEX, luaCBackRef_ ); 
-    ++arguments; // first parameter is return argument!
+    ++arguments; // first parameter is placeholder for return argument! - ignore
+    //iterate over arguments and push values on Lua stack
     for( CBackParameterTypes::const_iterator i = paramTypes_.begin();
          i != paramTypes_.end(); ++i, ++arguments ) {
         i->Push( lc_->LuaState(), *arguments );
-        //UV XXX temporary solution, need to ad LuaContext reference
-        //into Wrappers
-        if( i->Type() == QMetaType::typeName( QMetaType::QObjectStar ) ) {
+        if( i->IsQObjectPtr() ) {
             QObject* obj = reinterpret_cast< QObject* >( lua_touserdata( lc_->LuaState(), -1 ) );
             lua_pop( lc_->LuaState(), 1 );
             lc_->AddQObject( obj );
         }
     }
+    //call Lua function
     lua_pcall( lc_->LuaState(), paramTypes_.size(), 0, 0 );
 }
 
 }
 
-
+// Pre-defined types in Qt meta-type environment:
 //enum Type {
 //        // these are merged with QVariant
 //        Void = 0, Bool = 1, Int = 2, UInt = 3, LongLong = 4, ULongLong = 5,
