@@ -68,9 +68,11 @@ E.g.
     ...
     // add qobject to context  
     MyQObject qobj1;
-    lc.AddQObject( &amp;qobj, "qobj1" );
+    lc.AddQObject( &qobj, "qobj1" );
     ...
-    // add object and destroy it through Lua
+    // add object and destroy it through Lua garbage collector;
+    // QOBJ_IMMEDIATE_DELETE invokes 'delete' on the QObject pointer,
+    // QOBJ_DELETE_LATER invokes QObject::deleteLater()
     MyQObject* qobj2 = new MyQObject;
     lc.AddQObject( qobj, "qobj2", LuaContext::QOBJ_IMMEDIATE_DELETE );
     // if the object instance name is null the object will not be
@@ -78,7 +80,7 @@ E.g.
     ...
     // add object restricting the invokable methods to 'method1' and 'method2'
     MyQObject qobj3;
-    lc.AddQObject( &amp;qobj3, "qobj3", QStringList() << "method1" << "method2" );
+    lc.AddQObject( &qobj3, "qobj3", QStringList() << "method1" << "method2" );
     ...
     // connect signal to lua callback and evaluate Lua expressions
     lc.Eval( "qlua.connect( qobj1, 'aSignal(QString)',"
