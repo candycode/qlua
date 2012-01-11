@@ -132,7 +132,14 @@ public:
         NumberListToLuaTable< T >( l, L_ );
         if( name ) lua_setglobal( L_, name );
     }
-    /// @brief Add QObject to Lua context as Lua table.
+    /// @brief Add QObject to Lua context as a Lua table.
+	///
+	/// When a new QObject is added this method:
+	///   -# adds a new QObject reference in the QObject-Method database
+	///   -# iterates over the callable QObject's methods and for each method
+	///      adds a Method object with information required to invoke the QObject method
+	///   -# if caching is enabled it also creates a Lua reference and adds the reference
+	///      into the QObject-Reference database
     /// @param obj QObject
     /// @param tableName global name of Lua table wrapping object; if null object is
     ///                  left on stack
@@ -142,18 +149,18 @@ public:
     /// @param methodNames if not empty only the methods with the names in this list are added to the Lua table
     /// @param methodTypes if not empty only the methods of the required types are added to the Lua table  
     void AddQObject( QObject* obj, 
-                     //not setting a global name allows to use this method to push a table on the stack
                      const char* tableName = 0,
-                     bool cache = false, //caches objects: only one table per QObject pointer generated
-                     ObjectDeleteMode deleteMode = QOBJ_NO_DELETE, //destroys QObject instance
+                     bool cache = false, 
+                     ObjectDeleteMode deleteMode = QOBJ_NO_DELETE,
                      const QStringList& methodNames = QStringList(),
                      const QList< QMetaMethod::MethodType >& methodTypes =
-                         QList< QMetaMethod::MethodType >()  );
+                           QList< QMetaMethod::MethodType >()  );
     /// @brief Return value of global garbage collection policy.
     /// 
     /// The global object ownership policy is set from Lua through a call to
-    /// <code>qlua. 
+	/// @c qlua.ownQObjects() 
     bool OwnQObjects() const { return ownQObjects_; }
+	/// Destructor: Destroys Lua state if owned by this object
     ~LuaContext() {
         if( !wrappedContext_ ) lua_close( L_ );
     }
