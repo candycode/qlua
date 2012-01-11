@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ///@file
-///Qt signals to Lua callback functions.  
+///@brief Qt signals to Lua callback functions.  
 
 #include <QMap>
 #include <QList>

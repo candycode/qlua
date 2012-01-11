@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ///@file
-/// Lua context: Create new or wrap existing Lua state. 
+///@brief Lua context: Create new or wrap existing Lua state.  
 
 extern "C" {
 #include "lua.h"
