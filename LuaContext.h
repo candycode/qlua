@@ -49,6 +49,7 @@ extern "C" {
 #define QLUA_VERSION_MIN 2
 
 namespace qlua {
+
 inline void RaiseLuaError( lua_State* L, const char* errMsg ) {
     lua_pushstring( L, errMsg );
     lua_error( L );

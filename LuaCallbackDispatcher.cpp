@@ -59,7 +59,7 @@ bool LuaCallbackDispatcher::Disconnect( QObject *obj,
                                         int signalIdx,
                                         int cbackStackIndex ) {
     if( !lua_isfunction( lc_->LuaState(), cbackStackIndex ) ) {
-        RaiseLuaError( "No function to disconnect found" );
+        RaiseLuaError( lc_->LuaState(), "No function to disconnect found" );
         return false;
     }
     int m = 0;

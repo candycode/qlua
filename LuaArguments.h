@@ -774,52 +774,52 @@ private:
 class LArgWrapper {
 public:
     ///@brief Default constructor.
-    LArgWrapper() : rc_( 0 ) {}
+    LArgWrapper() : ac_( 0 ) {}
     ///@brief Copy constructor: Clones the internal Return constructor instance.
-    LArgWrapper( const LArgWrapper& other ) : rc_( 0 ), type_( other.type_ ) {
-        if( other.rc_ ) rc_ = other.rc_->Clone();
+    LArgWrapper( const LArgWrapper& other ) : ac_( 0 ), type_( other.type_ ) {
+        if( other.ac_ ) ac_ = other.ac_->Clone();
     }
     ///@brief Create instance from type name.
     ///
     ///An instance of LArgConstructor is created from the passes type name.
-    LArgWrapper( const QString& type ) : rc_( 0 ), type_( type ) {
+    LArgWrapper( const QString& type ) : ac_( 0 ), type_( type ) {
         if( type_ == QMetaType::typeName( QMetaType::Int ) ) {
-            rc_ = new IntLArgConstructor;
+            ac_ = new IntLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::Double ) ) {
-            rc_ = new DoubleLArgConstructor;
+            ac_ = new DoubleLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::Float ) ) {
-            rc_ = new FloatLArgConstructor;
+            ac_ = new FloatLArgConstructor;
         } else if( type_ == QMetaType::typeName( QMetaType::QString ) ) {
-            rc_ = new StringLArgConstructor;
+            ac_ = new StringLArgConstructor;
         } else if( type_ == QMetaType::typeName( QMetaType::QVariantMap ) ) {
-            rc_ = new VariantMapLArgConstructor;
+            ac_ = new VariantMapLArgConstructor;
         } else if( type_ == QMetaType::typeName( QMetaType::QVariantList ) ) {
-            rc_ = new VariantListLArgConstructor;
+            ac_ = new VariantListLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QObjectStar ) ) {
-            rc_ = new ObjectStarLArgConstructor;
+            ac_ = new ObjectStarLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QStringList ) ) {
-            rc_ = new StringListLArgConstructor;
+            ac_ = new StringListLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::QWidgetStar ) ) {
-            rc_ = new WidgetStarLArgConstructor;
+            ac_ = new WidgetStarLArgConstructor;
         } else if( type == QMetaType::typeName( QMetaType::VoidStar ) ) {
-            rc_ = new VoidStarLArgConstructor;
+            ac_ = new VoidStarLArgConstructor;
         } else if( type == QLUA_LIST_FLOAT64 ) {
-            rc_ = new ListLArgConstructor< double >;
+            ac_ = new ListLArgConstructor< double >;
         } else if( type == QLUA_LIST_FLOAT32 ) {
-            rc_ = new ListLArgConstructor< float >;
+            ac_ = new ListLArgConstructor< float >;
         } else if( type == QLUA_LIST_INT ) {
-            rc_ = new ListLArgConstructor< int >;
+            ac_ = new ListLArgConstructor< int >;
         } else if( type == QLUA_LIST_SHORT ) {
-            rc_ = new ListLArgConstructor< short >;
+            ac_ = new ListLArgConstructor< short >;
         } else if( type == QLUA_VECTOR_FLOAT64 ) {
-            rc_ = new VectorLArgConstructor< double >;
+            ac_ = new VectorLArgConstructor< double >;
         } else if( type == QLUA_VECTOR_FLOAT32 ) {
-            rc_ = new VectorLArgConstructor< float >;
+            ac_ = new VectorLArgConstructor< float >;
         } else if( type == QLUA_VECTOR_INT ) {
-            rc_ = new VectorLArgConstructor< int >;
+            ac_ = new VectorLArgConstructor< int >;
         } else if( type == QLUA_VECTOR_SHORT ) {
-            rc_ = new VectorLArgConstructor< short >;
-        } else if( type_.isEmpty() ) rc_ = new VoidLArgConstructor;
+            ac_ = new VectorLArgConstructor< short >;
+        } else if( type_.isEmpty() ) ac_ = new VoidLArgConstructor;
         else throw std::logic_error( ( "Type " + type + " unknown" ).toStdString() );
     }
     /// @brief Push values stored in the inner LArgConstructor instance on the
@@ -827,7 +827,7 @@ public:
     ///
     /// This is the method invoked to return values from a QObject method invocation.
     void Push( lua_State* L ) const {
-        rc_->Push( L );
+        ac_->Push( L );
     }
     /// @brief Push values stored in passed memory location on the Lua stack.
     ///
@@ -839,7 +839,7 @@ public:
     /// @param L Lua state
     /// @param value memory location to read from
     void Push( lua_State* L, void* value ) const {
-        rc_->Push( L, value ); // called from the callback dispatcher method
+        ac_->Push( L, value ); // called from the callback dispatcher method
     }
     /// @brief Return the location where the return argument passed to a method
     /// invocation shall be stored.
@@ -849,19 +849,21 @@ public:
     /// by the LArgConstructor instance stored in instances of this class.
     /// After the method invocation returns the value in the LArgConstructor instance
     /// is pushed on the Lua stack through a call to LArgConstructor::Push(lua_State*).
-    QGenericReturnArgument Arg() const { return rc_->Argument(); }
+    QGenericReturnArgument Arg() const { return ac_->Argument(); }
     /// Type name.
     const QString& Type() const { 
         return type_;
     }
     /// Meta type.
-    QMetaType::Type MetaType() const { return rc_->Type(); }
+    QMetaType::Type MetaType() const { return ac_->Type(); }
+    /// Return true if wrapped type is QObject pointer.
+    bool IsQObjectPtr() const { return ac_->IsQObjectPtr(); }
     /// Delete LArgConstructor instance.
-    ~LArgWrapper() { delete rc_; }
+    ~LArgWrapper() { delete ac_; }
 private:
     /// LArgConstructor instance created at construction time.
-    LArgConstructor* rc_;
-    /// Qt type name of data stored in rc_.
+    LArgConstructor* ac_;
+    /// Qt type name of data stored in ac_.
     QString type_;
 };
 
