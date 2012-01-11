@@ -104,8 +104,8 @@ I am personally using QLua on the following platforms (64bit versions only):
 - Windows 7
 - Mac OX X Snow Leopard
 - Ubuntu Linux 11.x
-- 
-With Qt 4.8 and Lua versions 5.1.4, 5.2 as well as luajit-beta9.
+
+with Qt 4.8 and Lua versions 5.1.4, 5.2 as well as luajit-beta9.
 
 
 Supported types
