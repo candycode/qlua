@@ -37,7 +37,7 @@ namespace qlua {
 
 class LuaContext;
 
-typedef QList< LArgWrapper  > CBackParameterTypes;
+typedef QList< LArgWrapper > CBackParameterTypes;
 
 //------------------------------------------------------------------------------
 /// @brief C++ method abstraction: Qt signals are connected to instances of this
@@ -105,14 +105,25 @@ public:
     /// Overridden method: This is what makes it possible to bind a signal
     /// to a Lua function through the index of a proxy method.
     int qt_metacall( QMetaObject::Call c, int id, void **arguments ); 
+    /// Connect signal to Lua function
+    /// @param obj source QObject
+    /// @param signalIdx signal index
+    /// @param paramTypes signal signature
+    /// @param luaCBackRef reference to Lua target function created through @c luaL_ref
     bool Connect( QObject *obj, 
                   int signalIdx,
                   const CBackParameterTypes& paramTypes,
                   int luaCBackRef );
+    /// Disconnect signal from Lua function; function must be already on the stack
+    /// @param obj source QObject
+    /// @param signalIdx signal index
+    /// @param cbackStackIndex position of Lua function in Lua stack
     bool Disconnect( QObject *obj, 
                      int signalIdx,
                      int cbackStackIndex );
+    /// Set LuaContext
     void SetLuaContext( LuaContext* lc ) { lc_ = lc; };
+    /// Destructor: Clear method database
     virtual ~LuaCallbackDispatcher() {
         for( QList< LuaCBackMethod* >::iterator i = luaCBackMethods_.begin();
              i != luaCBackMethods_.end(); ++i ) {
@@ -120,8 +131,11 @@ public:
         }
     }
 private:
+    /// LuaContext
     LuaContext* lc_;
+    /// Methods
     QList< LuaCBackMethod* > luaCBackMethods_;
+    /// Map Lua reference to method index in luaCBackMethods_ list
     QMap< LuaCBackRef, MethodId > cbackToMethodIndex_;
    
 };

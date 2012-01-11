@@ -50,18 +50,19 @@ bool LuaCallbackDispatcher::Connect( QObject *obj,
         cbackToMethodIndex_[ luaCBackRef ] = methodIdx;
         luaCBackMethods_.push_back(
             new LuaCBackMethod( lc_, paramTypes, luaCBackRef ) );
-    }
+}
     // connect signal to method in method array
     return QMetaObject::connect( obj, signalIdx, this, methodIdx + metaObject()->methodCount() );
 }
 //------------------------------------------------------------------------------
+// precondition: Lua function available in lua stack
 bool LuaCallbackDispatcher::Disconnect( QObject *obj, 
                                         int signalIdx,
                                         int cbackStackIndex ) {
     if( !lua_isfunction( lc_->LuaState(), cbackStackIndex ) ) {
         RaiseLuaError( lc_->LuaState(), "No function to disconnect found" );
         return false;
-    }
+/bin/bash: s: command not found
     int m = 0;
     bool ok = true;
     // iterate over callback methods, each method is associated with

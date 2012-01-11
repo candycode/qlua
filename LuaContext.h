@@ -63,7 +63,20 @@ inline void RaiseLuaError( lua_State* L, const std::string& errMsg ) {
 
 
 //------------------------------------------------------------------------------
+/// @brief Lua context. Either create a new context or wrap an existing one.
+///
+/// This class is the interface exposed by QLua to client code.
+/// Use the provided method to add QObjects and other types the Lua context and
+/// to evaluate Lua code.
+/// LuaContext is also used internally by other classes to add QObjects returned
+/// by methods or received from signals to the Lua context.
 class LuaContext {
+    /// @brief Stores information used at method invocation time.
+    /// 
+    /// When a new QObject is added to the Lua context a new Method is created
+    /// for each callable method (i.e. slot or Q_INVOKABLE) storing the signature
+    /// to be used at invocation time and the QMetaMethod to use for the actual
+    /// invocation.
     struct Method {
         QObject* obj_;
         QMetaMethod metaMethod_;
@@ -73,61 +86,61 @@ class LuaContext {
         obj_( obj ), metaMethod_( mm ), argumentWrappers_( pw ), returnWrapper_( rw ) {}
     };
 public:
-    enum ObjectDeleteMode { QOBJ_NO_DELETE, QOBJ_IMMEDIATE_DELETE, QOBJ_DELETE_LATER };
+    /// Delete mode: Specify how/if object shall be garbage collected
+    enum ObjectDeleteMode { 
+        QOBJ_NO_DELETE, ///< Lifetime not managed by Lua; never garbage collected 
+        QOBJ_IMMEDIATE_DELETE, ///< Garbage collected: @e delete used
+        QOBJ_DELETE_LATER ///< Garbage collected: @e QObject::deleteLater() used
+    };
     typedef QList< Method > Methods;
     typedef QMap< QObject*, QMap< QString, Methods > > ObjectMethodMap;
     typedef QMap< QObject*, int > ObjectReferenceMap;
-    LuaContext( lua_State* L = 0 ) : L_( L ), wrappedContext_( false ), ownQObjects_( false ) {
-        
-        if( L_ == 0 ) L_ = luaL_newstate();
-        else wrappedContext_ = true;
-        
-        luaL_openlibs( L_);
-        lua_newtable(L_);
-
-        lua_pushstring( L_,  "connect" );
-        lua_pushlightuserdata( L_, this );
-        lua_pushcclosure( L_, &LuaContext::QtConnect , 1);
-        lua_settable( L_, -3 );
-        
-        lua_pushstring( L_,  "disconnect" );
-        lua_pushlightuserdata( L_, this );
-        lua_pushcclosure( L_, &LuaContext::QtDisconnect , 1);
-        lua_settable( L_, -3 );
-
-        lua_pushstring( L_,  "ownQObjects" );
-        lua_pushlightuserdata( L_, this );
-        lua_pushcclosure( L_, &LuaContext::SetQObjectsOwnership , 1);
-        lua_settable( L_, -3 );
-
-        lua_pushstring( L_, "version" );
-        lua_pushstring( L_, QLUA_VERSION );
-        lua_settable( L_, -3 );
-
-        lua_setglobal( L_, "qlua" );
-        dispatcher_.SetLuaContext( this );
-        RegisterTypes();
-    }
+    /// Constructor: Create @c qlua table with QLua interface.
+    /// @param L if not null the passed Lua state is used, otherwise a new one is created.
+    LuaContext( lua_State* L = 0 ); 
+    /// Return Lua state.
     lua_State* LuaState() const { return L_; }
+    /// Evaluate Lua code.
     void Eval( const char* code ) {
         ReportErrors( luaL_dostring( L_, code ) );
     }
+    /// @brief Add QVariantMap: Either push it on the stack or set it as global.
+    /// @param vm QVariantMap
+    /// @param name global name; if null value is left on the Lua stack.
     void AddQVariantMap( const QVariantMap& vm, const char* name = 0 ) {        
         VariantMapToLuaTable( vm, L_ );
         if( name ) lua_setglobal( L_, name );
     }
+    /// @brief Add QVariantList: Either push it on the stack or set it as global.
+    /// @param vl QVariantList
+    /// @param name global name; if null value is left on the Lua stack.
     void AddQVariantList( const QVariantList& vl, const char* name = 0 ) {      
         VariantListToLuaTable( vl, L_ );
         if( name ) lua_setglobal( L_, name );
     }
+    /// @brief Add QStringList: Either push it on the stack or set it as global.
+    /// @param vl QStringList
+    /// @param name global name; if null value is left on the Lua stack.
     void AddQStringList( const QStringList& sl, const char* name = 0 ){     
         StringListToLuaTable( sl, L_ );
         if( name ) lua_setglobal( L_, name );
     }
-    template < typename T > void AddQList( const QList< T >& l, const char* name = 0 ){     
+    /// @brief Add QList of numeric values: Either push it on the stack or set it as global.
+    /// @param vl QStringList
+    /// @param name global name; if null value is left on the Lua stack.
+    template < typename T > void AddQList( const QList< T >& l, const char* name = 0 ) {     
         NumberListToLuaTable< T >( l, L_ );
         if( name ) lua_setglobal( L_, name );
     }
+    /// @brief Add QObject to Lua context as Lua table.
+    /// @param obj QObject
+    /// @param tableName global name of Lua table wrapping object; if null object is
+    ///                  left on stack
+    /// @param cache if true object won't be re-added to LuaContext. If @c tableName is
+    ///              not null a new global variable pointing at the previoulsy added object will be added.
+    /// @param deleteMode choose how/if object shall be garbage collected; @see ObjectDeleteMode
+    /// @param methodNames if not empty only the methods with the names in this list are added to the Lua table
+    /// @param methodTypes if not empty only the methods of the required types are added to the Lua table  
     void AddQObject( QObject* obj, 
                      //not setting a global name allows to use this method to push a table on the stack
                      const char* tableName = 0,
@@ -136,6 +149,10 @@ public:
                      const QStringList& methodNames = QStringList(),
                      const QList< QMetaMethod::MethodType >& methodTypes =
                          QList< QMetaMethod::MethodType >()  );
+    /// @brief Return value of global garbage collection policy.
+    /// 
+    /// The global object ownership policy is set from Lua through a call to
+    /// <code>qlua. 
     bool OwnQObjects() const { return ownQObjects_; }
     ~LuaContext() {
         if( !wrappedContext_ ) lua_close( L_ );

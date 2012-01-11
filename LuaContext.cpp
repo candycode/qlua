@@ -32,6 +32,41 @@
 
 namespace qlua {
 //------------------------------------------------------------------------------
+LuaContext::LuaContext( lua_State* L ) : L_( L ), 
+                                             wrappedContext_( false ), 
+                                             ownQObjects_( false ) {
+        
+    if( L_ == 0 ) L_ = luaL_newstate();
+    else wrappedContext_ = true;
+
+    luaL_openlibs( L_);
+    lua_newtable(L_);
+
+    lua_pushstring( L_,  "connect" );
+    lua_pushlightuserdata( L_, this );
+    lua_pushcclosure( L_, &LuaContext::QtConnect , 1);
+    lua_settable( L_, -3 );
+
+    lua_pushstring( L_,  "disconnect" );
+    lua_pushlightuserdata( L_, this );
+    lua_pushcclosure( L_, &LuaContext::QtDisconnect , 1);
+    lua_settable( L_, -3 );
+
+    lua_pushstring( L_,  "ownQObjects" );
+    lua_pushlightuserdata( L_, this );
+    lua_pushcclosure( L_, &LuaContext::SetQObjectsOwnership , 1);
+    lua_settable( L_, -3 );
+
+    lua_pushstring( L_, "version" );
+    lua_pushstring( L_, QLUA_VERSION );
+    lua_settable( L_, -3 );
+
+    lua_setglobal( L_, "qlua" );
+    dispatcher_.SetLuaContext( this );
+    RegisterTypes();
+}
+
+//------------------------------------------------------------------------------
 void LuaContext::AddQObject( QObject* obj, 
                              const char* tableName,
                              bool cache, 
@@ -359,7 +394,7 @@ int LuaContext::InvokeMethod( lua_State *L ) {
             break;
         }
     }
-    if( !mi ) throw std::runtime_error( "Method not found" );
+    if( !mi ) throw std::logic_error( "Method not found" );
     switch( numArgs ) {
         case  0: return Invoke0( mi, lc );
                  break;
@@ -383,7 +418,8 @@ int LuaContext::InvokeMethod( lua_State *L ) {
                  break;
         case 10: return Invoke10( mi, lc );
                  break;
-        default: break;                                                         
+        default: throw std::range_error( "Invalid number of arguments" );
+                 break;                                                         
     }
     return 0;
 }
@@ -394,7 +430,8 @@ void HandleReturnValue( LuaContext& lc, QMetaType::Type type ) {
     if( type == QMetaType::QObjectStar || type == QMetaType::QWidgetStar ) {
         QObject* obj = reinterpret_cast< QObject* >( lua_touserdata( lc.LuaState(), -1 ) );
         lua_pop( lc.LuaState(), 1 );
-        lc.AddQObject( obj, 0, lc.OwnQObjects() ? LuaContext::QOBJ_IMMEDIATE_DELETE : LuaContext::QOBJ_NO_DELETE );
+        lc.AddQObject( obj, 0, lc.OwnQObjects() ? LuaContext::QOBJ_IMMEDIATE_DELETE 
+                               : LuaContext::QOBJ_NO_DELETE );
     }
 }
 
