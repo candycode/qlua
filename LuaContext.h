@@ -138,7 +138,7 @@ public:
 	///   -# adds a new QObject reference in the QObject-Method database
 	///   -# iterates over the callable QObject's methods and for each method
 	///      adds a Method object with information required to invoke the QObject method
-	///   -# if caching is enabled it also creates a Lua reference and adds the reference
+	///   -# if caching is enabled it creates a Lua reference and adds the reference
 	///      into the QObject-Reference database
     /// @param obj QObject
     /// @param tableName global name of Lua table wrapping object; if null object is
@@ -158,19 +158,35 @@ public:
     /// @brief Return value of global garbage collection policy.
     /// 
     /// The global object ownership policy is set from Lua through a call to
-	/// @c qlua.ownQObjects() 
+	/// @c qlua.ownQObjects(). The ownership policy affects the QObjects returned
+	/// by QObject methods only.
     bool OwnQObjects() const { return ownQObjects_; }
 	/// Destructor: Destroys Lua state if owned by this object
     ~LuaContext() {
         if( !wrappedContext_ ) lua_close( L_ );
     }
 private:
+	/// Remove object from databases.
     void RemoveObject( QObject* obj );
+    /// @name Lua interface
+	//@{
+	/// Connect Qt signal to Lua function or QObject method
     static int QtConnect( lua_State* L );
+	/// Disconnect Qt signal from Lua function or QObject method
     static int QtDisconnect( lua_State* L );
+	/// Invoke QObject method, this is the function that is called
+	/// by each Lua function added to the QObject table: information
+	/// on QObject instance and method to call are extracted from 
+	/// closure environment as upvalues
+	static int InvokeMethod( lua_State* L );
+	/// Invoked automatically by Lua when value is garbage collected 
     static int DeleteObject( lua_State* L );
-    static int InvokeMethod( lua_State* L );
+	/// Set default policy for ownership of returned QObjects
     static int SetQObjectsOwnership( lua_State* L );
+    //@}
+	//@{
+	/// Called by Invoke depending on the number of arguments in
+	/// method signature.
     static int Invoke0( const Method* mi, LuaContext& L );
     static int Invoke1( const Method* mi, LuaContext& L );
     static int Invoke2( const Method* mi, LuaContext& L );
@@ -182,23 +198,39 @@ private:
     static int Invoke8( const Method* mi, LuaContext& L );
     static int Invoke9( const Method* mi, LuaContext& L );
     static int Invoke10( const Method* mi, LuaContext& L );
-    void ReportErrors( int status ) {
+    //@}
+	/// Push error message on Lua stack and trigger a Lua error.
+	void ReportErrors( int status ) {
         if( status != 0 ) {
             std::string err = lua_tostring( L_, -1 );
             lua_pop( L_, 1 );
             throw std::runtime_error( err );
         }
     }
+	/// Register supported types.
     static void RegisterTypes();
 private:
+	/// (possibly wrapped) Lua state
     lua_State* L_;
+	/// Signal if context is wrapped or owned
     bool wrappedContext_;   
+	/// State variable affecting the life-time management of returned QObjects
     bool ownQObjects_;
+	/// @brief QObject-Method database: Each QObject is stored together with the list
+	/// of associated method signatures
     ObjectMethodMap objMethods_;
-    ObjectReferenceMap objRefs_;
-    LuaCallbackDispatcher dispatcher_; //signal->dispatcher_->Lua callback
+    /// QObject-Lua reference database  
+	ObjectReferenceMap objRefs_;
+	/// @brief Dispatcher object: signal->dispatcher->Lua function connection.
+	///
+	/// Each time a connection between a Qt signal and a Lua function is requested
+	/// a new connection is established between the signal and a dynamically created
+	/// proxy method which invokes the Lua function.
+    LuaCallbackDispatcher dispatcher_;
 };
 
+//@
+/// Functions to extract values from Lua context
 template < typename T >
 T GetValue( const LuaContext& lc, const QString& name ) {
     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
@@ -234,5 +266,5 @@ inline QStringList GetValue< QStringList >( const LuaContext& lc, const QString&
     if( !lua_istable( lc.LuaState(), -1 ) ) throw std::runtime_error( "Not a lua table" );
     return ParseLuaTableAsStringList( lc.LuaState(), -1 );
 }
-
+//@}
 }
