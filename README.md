@@ -120,8 +120,8 @@ The currently supported types are:
 - QVector< int | short | float | double >
 - QList< int | short | float | double >
 - bool, int, float, double, short, long long
-- void*
-- QObject*, QWidget*
+- void pointer
+- QObject pointer, QWidget pointer
 
 QVariantList and QVariantMap are converted to/from a Lua table.
 
