@@ -62,7 +62,7 @@ bool LuaCallbackDispatcher::Disconnect( QObject *obj,
     if( !lua_isfunction( lc_->LuaState(), cbackStackIndex ) ) {
         RaiseLuaError( lc_->LuaState(), "No function to disconnect found" );
         return false;
-/bin/bash: s: command not found
+	}
     int m = 0;
     bool ok = true;
     // iterate over callback methods, each method is associated with
