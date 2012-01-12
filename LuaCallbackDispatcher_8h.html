@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>QLua: Main Page</title>
+<title>QLua: LuaCallbackDispatcher.h File Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -52,10 +52,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -74,13 +74,58 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
+    </ul>
+  </div>
 </div>
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
-<div class="title">QLua Documentation</div>  </div>
+<div class="title">LuaCallbackDispatcher.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+
+<p>Qt signals to Lua callback functions.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &lt;QMap&gt;</code><br/>
+<code>#include &lt;QList&gt;</code><br/>
+<code>#include &quot;<a class="el" href="LuaArguments_8h_source.html">LuaArguments.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for LuaCallbackDispatcher.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="LuaCallbackDispatcher_8h__incl.png" border="0" usemap="#LuaCallbackDispatcher_8h" alt=""/></div>
+<map name="LuaCallbackDispatcher_8h" id="LuaCallbackDispatcher_8h">
+<area shape="rect" id="node7" href="LuaArguments_8h.html" title="Declarations and definitions of constructors for creating C++ values from Lua values." alt="" coords="485,80,603,107"/><area shape="rect" id="node28" href="LuaQtTypes_8h.html" title="Utility functions for converting data types between Lua and Qt." alt="" coords="377,155,481,181"/></map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="LuaCallbackDispatcher_8h__dep__incl.png" border="0" usemap="#LuaCallbackDispatcher_8hdep" alt=""/></div>
+<map name="LuaCallbackDispatcher_8hdep" id="LuaCallbackDispatcher_8hdep">
+<area shape="rect" id="node3" href="LuaContext_8h.html" title="Lua context: Create new or wrap existing Lua state." alt="" coords="39,80,137,107"/></map>
+</div>
+</div>
+<p><a href="LuaCallbackDispatcher_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqlua_1_1LuaCBackMethod.html">qlua::LuaCBackMethod</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">C++ method abstraction: Qt signals are connected to instances of this class which invokes associated Lua function through the <code>Invoke</code> method.  <a href="classqlua_1_1LuaCBackMethod.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqlua_1_1LuaCallbackDispatcher.html">qlua::LuaCallbackDispatcher</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages Lua function invocation through Qt signals. And connection of Qt signals to Lua functions or QObject methods.  <a href="classqlua_1_1LuaCallbackDispatcher.html#details">More...</a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html">qlua</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight"><p>QLua namespace. </p>
+<br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Qt signals to Lua callback functions. </p>
+</div></div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
