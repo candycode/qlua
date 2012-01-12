@@ -233,42 +233,53 @@ private:
     LuaCallbackDispatcher dispatcher_;
 };
 
-//@
-/// Functions to extract values from Lua context
+
+/// Extract C++ value from Lua context.
+/// @tparam T type of returned value
+/// @param lc LuaContext
+/// @param name global name of variable in Lua context
 template < typename T >
 T GetValue( const LuaContext& lc, const QString& name ) {
     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
     return luaL_checknumber( lc.LuaState(), -1 );
 }
 
+/// Extract list of number.
 template < typename T >
 QList< T > GetValues( const LuaContext& lc, const QString& name ) {
     if( !lua_istable( lc.LuaState(), -1 ) ) throw std::runtime_error( "Not a lua table" );
     return ParseLuaTableAsNumberList< T >( lc.LuaState(), -1 );
 }
 
+/// Extract string.
 template <>
 inline QString GetValue< QString >( const LuaContext& lc, const QString& name ) {
     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
     return luaL_checkstring( lc.LuaState(), -1 );
 }
+
+/// Extract Lua table as variant map.
 template <>
 inline QVariantMap GetValue< QVariantMap >( const LuaContext& lc, const QString& name ) {
     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
     if( !lua_istable( lc.LuaState(), -1 ) ) throw std::runtime_error( "Not a lua table" );
     return ParseLuaTable( lc.LuaState(), -1 );
 }
+
+/// Extract Lua table as variant list.
 template <>
 inline QVariantList GetValue< QVariantList >( const LuaContext& lc, const QString& name ) {
     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
     if( !lua_istable( lc.LuaState(), -1 ) ) throw std::runtime_error( "Not a lua table" );
     return ParseLuaTableAsVariantList( lc.LuaState(), -1 );
 }
+
+/// Extract Lua table as string list.
 template <>
 inline QStringList GetValue< QStringList >( const LuaContext& lc, const QString& name ) {
     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
     if( !lua_istable( lc.LuaState(), -1 ) ) throw std::runtime_error( "Not a lua table" );
     return ParseLuaTableAsStringList( lc.LuaState(), -1 );
 }
-//@}
+
 }

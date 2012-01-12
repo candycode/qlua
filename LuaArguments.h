@@ -396,7 +396,7 @@ protected:
         ga_ = QReturnArgument< T >( QMetaType::typeName( Type() ), arg );
     }
     /// Placeholder for returned data. 
-    QGenericReturnArgument ga_; 
+    QGenericReturnArgument ga_; // not private, breaks encapsulation
 };
 /// LArgConstructor implementation for @c integer type
 class IntLArgConstructor : public LArgConstructor {

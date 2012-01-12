@@ -85,7 +85,13 @@ bool ConvertibleTo( FromT v ) {
     return FromT( ToT( v ) ) == v;
 }
 
+//==============================================================================
+// Lua -> C++
+
 //------------------------------------------------------------------------------
+/// Create QVariant from Lua value
+/// @param L Lua state
+/// @param idx index of value in Lua table
 inline
 QVariant LuaValueToQVariant( lua_State* L, int idx ) {
     if( lua_isboolean( L, idx ) ) {
@@ -110,6 +116,9 @@ QVariant LuaValueToQVariant( lua_State* L, int idx ) {
 }
 
 //------------------------------------------------------------------------------
+/// Create QList<T> from Lua table where T is @c int @c short @c float or @c double
+/// @param L Lua State
+/// @param stackTableIndex index of table in Lua stack
 template < typename T >
 QList< T > ParseLuaTableAsNumberList( lua_State* L, int stackTableIndex ) {
       luaL_checktype( L, stackTableIndex, LUA_TTABLE );
@@ -129,6 +138,9 @@ QList< T > ParseLuaTableAsNumberList( lua_State* L, int stackTableIndex ) {
     return list;
 }
 //------------------------------------------------------------------------------
+/// Create QStringList from Lua table.
+/// @param L Lua state
+/// @param stackTableIndex index of table in Lua stack
 inline
 QStringList ParseLuaTableAsStringList( lua_State* L, int stackTableIndex ) {
       luaL_checktype( L, stackTableIndex, LUA_TTABLE );
@@ -147,6 +159,10 @@ QStringList ParseLuaTableAsStringList( lua_State* L, int stackTableIndex ) {
     }
     return list;
 }
+//------------------------------------------------------------------------------
+/// Create QVector<T> from Lua table where T is @c int @c short @c float or @c double
+/// @param L Lua State
+/// @param stackTableIndex index of table in Lua stack
 template < typename T >
 QVector< T > ParseLuaTableAsNumberVector( lua_State* L, int stackTableIndex ) {
 #if LUA_VERSION_NUM > 501 
@@ -167,8 +183,9 @@ QVector< T > ParseLuaTableAsNumberVector( lua_State* L, int stackTableIndex ) {
 }
 
 //------------------------------------------------------------------------------
-/// Convert from Lua table to QVariantMap.
-/// @param L Lua Context
+/// Create QVariantMap from Lua table.
+/// @param L Lua State
+/// @param stackTableIndex index of table in Lua stack
 inline
 QVariantMap ParseLuaTable( lua_State* L, int stackTableIndex, bool removeTable = true ) {
     luaL_checktype( L, stackTableIndex, LUA_TTABLE );
@@ -186,6 +203,10 @@ QVariantMap ParseLuaTable( lua_State* L, int stackTableIndex, bool removeTable =
     if( removeTable ) lua_pop( L, 1 ); // remvove table
     return m;
 }
+//------------------------------------------------------------------------------
+/// Create QVariantList from Lua table.
+/// @param L Lua State
+/// @param stackTableIndex index of table in Lua stack
 inline
 QVariantList ParseLuaTableAsVariantList( lua_State* L, int stackTableIndex, bool removeTable = true ) {
     luaL_checktype( L, stackTableIndex, LUA_TTABLE );
@@ -203,10 +224,17 @@ QVariantList ParseLuaTableAsVariantList( lua_State* L, int stackTableIndex, bool
     return l;
 }
 
-        
+
+//=============================================================================
+// C++ -> Lua
+
 void VariantMapToLuaTable( const QVariantMap&, lua_State* );
 void VariantListToLuaTable( const QVariantList&, lua_State* );
 
+//------------------------------------------------------------------------------
+/// Create Lua value from QVariant and push it on the Lua stack.
+/// @param v QVariant
+/// @param L Lua state
 inline
 void VariantToLuaValue( const QVariant& v, lua_State* L ) {
 
@@ -234,6 +262,9 @@ void VariantToLuaValue( const QVariant& v, lua_State* L ) {
 }
 
 //------------------------------------------------------------------------------
+/// Create Lua table from QVariantMap and push it on the Lua stack.
+/// @param v QVariant
+/// @param L Lua state
 inline
 void VariantMapToLuaTable( const QVariantMap& vm, lua_State* L ) {
     lua_newtable( L ); 
@@ -243,7 +274,10 @@ void VariantMapToLuaTable( const QVariantMap& vm, lua_State* L ) {
         lua_rawset( L, -3 );
     }
 }
-
+//------------------------------------------------------------------------------
+/// Create Lua table from QVariantList and push it on the Lua stack.
+/// @param v QVariant
+/// @param L Lua state
 inline
 void VariantListToLuaTable( const QVariantList& vl, lua_State* L ) {
     lua_newtable( L ); 
@@ -254,7 +288,10 @@ void VariantListToLuaTable( const QVariantList& vl, lua_State* L ) {
         lua_rawset( L, -3 );
     }
 }
-
+//------------------------------------------------------------------------------
+/// Create Lua table from QList<T> where T is a number and push it on the Lua stack.
+/// @param v QVariant
+/// @param L Lua state
 template < typename T >
 void NumberListToLuaTable( const QList< T >& vl, lua_State* L ) {
     lua_newtable( L ); 
@@ -264,7 +301,10 @@ void NumberListToLuaTable( const QList< T >& vl, lua_State* L ) {
         lua_rawseti( L, -2, i );
     }
 }
-
+//------------------------------------------------------------------------------
+/// Create Lua table from QVector<T> where T is a number and push it on the Lua stack.
+/// @param v QVariant
+/// @param L Lua state
 template < typename T >
 void NumberVectorToLuaTable( const QVector< T >& vl, lua_State* L ) {
     lua_newtable( L ); 
@@ -274,7 +314,10 @@ void NumberVectorToLuaTable( const QVector< T >& vl, lua_State* L ) {
         lua_rawseti( L, -2, i );
     }
 }
-
+//------------------------------------------------------------------------------
+/// Create Lua table from QStringList and push it on the Lua stack.
+/// @param v QVariant
+/// @param L Lua state
 inline
 void StringListToLuaTable( const QStringList& vl, lua_State* L ) {
     lua_newtable( L ); 
