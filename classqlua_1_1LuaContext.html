@@ -81,7 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="contents">
 <!-- doxytag: class="qlua::LuaContext" -->
-<p>Lua context. Create or wraps an existing Lua state.  
+<p>Lua context. Creates or wraps an existing Lua state.  
  <a href="classqlua_1_1LuaContext.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="LuaContext_8h_source.html">LuaContext.h</a>&gt;</code></p>
@@ -133,8 +133,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor: Destroys Lua state if owned by this object. <br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Lua context. Create or wraps an existing Lua state. </p>
-<p>This class is the interface exposed by QLua to client code. Use the provided method to add QObjects and other types the Lua context and to evaluate Lua code. <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Create or wraps an existing Lua state.">LuaContext</a> is also used internally by other classes to add QObjects returned by methods or received from signals to the Lua context. </p>
+<div class="textblock"><p>Lua context. Creates or wraps an existing Lua state. </p>
+<p>This class is the interface exposed by QLua to client code. Use the provided method to add QObjects and other types the Lua context and to evaluate Lua code. <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a> is also used internally by other classes to add QObjects returned by methods or received from signals to the Lua context. </p>
 </div><hr/><h2>Member Enumeration Documentation</h2>
 <a class="anchor" id="a1bca84934c223cfc1829355925ede6eb"></a><!-- doxytag: member="qlua::LuaContext::ObjectDeleteMode" ref="a1bca84934c223cfc1829355925ede6eb" args="" -->
 <div class="memitem">
@@ -286,7 +286,7 @@ template&lt;typename T &gt; </div>
   <table class="params">
     <tr><td class="paramname">obj</td><td>QObject </td></tr>
     <tr><td class="paramname">tableName</td><td>global name of Lua table wrapping object; if null object is left on stack </td></tr>
-    <tr><td class="paramname">cache</td><td>if true object won't be re-added to <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Create or wraps an existing Lua state.">LuaContext</a>. If <code>tableName</code> is not null a new global variable pointing at the previoulsy added object will be added. </td></tr>
+    <tr><td class="paramname">cache</td><td>if true object won't be re-added to <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>. If <code>tableName</code> is not null a new global variable pointing at the previoulsy added object will be added. </td></tr>
     <tr><td class="paramname">deleteMode</td><td>choose how/if object shall be garbage collected; </td></tr>
   </table>
   </dd>
@@ -450,7 +450,7 @@ template&lt;typename T &gt; </div>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 13 2012 11:40:25 for QLua by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 13 2012 11:41:21 for QLua by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>
