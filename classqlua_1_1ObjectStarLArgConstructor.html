@@ -135,7 +135,7 @@ QMetaType::Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <div class="memdoc">
 
 <p>Return <code>true</code> if type is a pointer to a QObject-derived object. </p>
-<p>This is required to have the QLua run-time add the passed QObject into the Lua context. The other option is to have LArgConstructors::Push receive a reference to a <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Either create a new context or wrap an existing one.">LuaContext</a> which introduces a two-way dependency between <a class="el" href="classqlua_1_1LArgConstructor.html" title="Abstract base class for return constructors which create Lua values from C++ values.">LArgConstructor</a> and <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Either create a new context or wrap an existing one.">LuaContext</a>. </p>
+<p>This is required to have the QLua run-time add the passed QObject into the Lua context. The other option is to have LArgConstructors::Push receive a reference to a <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Create or wraps an existing Lua state.">LuaContext</a> which introduces a two-way dependency between <a class="el" href="classqlua_1_1LArgConstructor.html" title="Abstract base class for return constructors which create Lua values from C++ values.">LArgConstructor</a> and <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Create or wraps an existing Lua state.">LuaContext</a>. </p>
 
 <p>Reimplemented from <a class="el" href="classqlua_1_1LArgConstructor.html#a0818bddd9773d7f09566e2c5e5eeccb6">qlua::LArgConstructor</a>.</p>
 
@@ -159,7 +159,7 @@ QMetaType::Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 13 2012 11:36:19 for QLua by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 13 2012 11:40:25 for QLua by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

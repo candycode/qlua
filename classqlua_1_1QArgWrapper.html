@@ -112,7 +112,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Wrapper for parameters in a QObject method invocation. </p>
-<p>Whenever a new QObject is added to the Lua context, the signature of each method is translated to an index and a list of <a class="el" href="classqlua_1_1QArgWrapper.html" title="Wrapper for parameters in a QObject method invocation.">QArgWrapper</a> objects stored inside a <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Either create a new context or wrap an existing one.">LuaContext</a> instance. At invocation time the proper method is invoked through a call to <code>QMetaMethod::invoke</code> passing the arguments returned by the <a class="el" href="classqlua_1_1QArgWrapper.html#ac3c20ca17eac6f49287893d32ccc0f4a" title="Return QGenericArgument instance created from values on the Lua stack.">QArgWrapper::Arg</a> method invoked on each parameter in the argument list. <a class="el" href="classqlua_1_1QArgWrapper.html" title="Wrapper for parameters in a QObject method invocation.">QArgWrapper</a> stores an instance of <a class="el" href="structqlua_1_1QArgConstructor.html" title="Interface for constructor objects which generate C++ values from Lua values read from the Lua stack...">QArgConstructor</a> used to create a QGenericArgument from values on the Lua stack. </p>
+<p>Whenever a new QObject is added to the Lua context, the signature of each method is translated to an index and a list of <a class="el" href="classqlua_1_1QArgWrapper.html" title="Wrapper for parameters in a QObject method invocation.">QArgWrapper</a> objects stored inside a <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Create or wraps an existing Lua state.">LuaContext</a> instance. At invocation time the proper method is invoked through a call to <code>QMetaMethod::invoke</code> passing the arguments returned by the <a class="el" href="classqlua_1_1QArgWrapper.html#ac3c20ca17eac6f49287893d32ccc0f4a" title="Return QGenericArgument instance created from values on the Lua stack.">QArgWrapper::Arg</a> method invoked on each parameter in the argument list. <a class="el" href="classqlua_1_1QArgWrapper.html" title="Wrapper for parameters in a QObject method invocation.">QArgWrapper</a> stores an instance of <a class="el" href="structqlua_1_1QArgConstructor.html" title="Interface for constructor objects which generate C++ values from Lua values read from the Lua stack...">QArgConstructor</a> used to create a QGenericArgument from values on the Lua stack. </p>
 </div><hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="ac3c20ca17eac6f49287893d32ccc0f4a"></a><!-- doxytag: member="qlua::QArgWrapper::Arg" ref="ac3c20ca17eac6f49287893d32ccc0f4a" args="(lua_State *L, int idx) const " -->
 <div class="memitem">
@@ -162,7 +162,7 @@ Public Member Functions</h2></td></tr>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 13 2012 11:36:19 for QLua by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 13 2012 11:40:25 for QLua by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>
