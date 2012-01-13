@@ -192,19 +192,30 @@ template&lt;&gt; </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QVariant&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#aed5177613121bd3c288687a07dbf992f">LuaValueToQVariant</a> (lua_State *L, int idx)</td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">QList&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#ab020ca04f399d056d251349730bc5a4c">ParseLuaTableAsNumberList</a> (lua_State *L, int stackTableIndex)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create QList&lt;T&gt; from Lua table where T is <code>int</code> <code>short</code> <code>float</code> or <code>double</code>.  <a href="#ab020ca04f399d056d251349730bc5a4c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QStringList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#ab843c929e3c430a311260d72f21272a5">ParseLuaTableAsStringList</a> (lua_State *L, int stackTableIndex)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create QStringList from Lua table.  <a href="#ab843c929e3c430a311260d72f21272a5"></a><br/></td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">QVector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a4281be8d16306bd9a579d5dbf4df977c">ParseLuaTableAsNumberVector</a> (lua_State *L, int stackTableIndex)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">QVector&lt;T&gt; from Lua table where T is <code>int</code> <code>short</code> <code>float</code> or <code>double</code>.  <a href="#a4281be8d16306bd9a579d5dbf4df977c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QVariantMap&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a4e7aea7b09d9a7c719458d4e6cea3185">ParseLuaTable</a> (lua_State *L, int stackTableIndex, bool removeTable=true)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create QVariantMap from Lua table.  <a href="#a4e7aea7b09d9a7c719458d4e6cea3185"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QVariantList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a9260f5abef3aaca69c3bb5dda45aa6f6">ParseLuaTableAsVariantList</a> (lua_State *L, int stackTableIndex)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a9a22932235ec10f30240aee2b6b0cbf6">VariantMapToLuaTable</a> (const QVariantMap &amp;, lua_State *)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a2be4fe6216f8f6690c23d7c63e02be61">VariantListToLuaTable</a> (const QVariantList &amp;, lua_State *)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create QVariantList from Lua table.  <a href="#a9260f5abef3aaca69c3bb5dda45aa6f6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a2e62b33b667ddd39efb977140e473781">VariantMapToLuaTable</a> (const QVariantMap &amp;vm, lua_State *L)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Lua table from QVariantMap and push it on the Lua stack.  <a href="#a2e62b33b667ddd39efb977140e473781"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a85a31ceded331bf95be77c8772fb4b7b">VariantListToLuaTable</a> (const QVariantList &amp;vl, lua_State *L)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Lua table from QVariantList and push it on the Lua stack.  <a href="#a85a31ceded331bf95be77c8772fb4b7b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a92137aa2cd6c53326084409b2f692793">VariantToLuaValue</a> (const QVariant &amp;v, lua_State *L)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Lua value from QVariant and push it on the Lua stack.  <a href="#a92137aa2cd6c53326084409b2f692793"></a><br/></td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a92a55797970ec82f2b5a0dfba35b0e06">NumberListToLuaTable</a> (const QList&lt; T &gt; &amp;l, lua_State *L)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Lua table from QList&lt;T&gt; where T is a number and push it on the Lua stack.  <a href="#a92a55797970ec82f2b5a0dfba35b0e06"></a><br/></td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#aa12ee69a98eb9209427690a4f79bf5a9">NumberVectorToLuaTable</a> (const QVector&lt; T &gt; &amp;v, lua_State *L)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Lua table from QVector&lt;T&gt; where T is a number and push it on the Lua stack.  <a href="#aa12ee69a98eb9209427690a4f79bf5a9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqlua.html#a09d459eb28c095b3c8719285a22ea000">StringListToLuaTable</a> (const QStringList &amp;sl, lua_State *L)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Lua table from QStringList and push it on the Lua stack.  <a href="#a09d459eb28c095b3c8719285a22ea000"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>QLua namespace. </p>
@@ -313,6 +324,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create Lua table from QList&lt;T&gt; where T is a number and push it on the Lua stack. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -350,6 +362,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create Lua table from QVector&lt;T&gt; where T is a number and push it on the Lua stack. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -391,6 +404,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create QVariantMap from Lua table. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -429,7 +443,8 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
-<p>Create QList&lt;T&gt; from Lua table where T is <code>int</code> <code>short</code> <code>float</code> or <code>double</code> </p>
+
+<p>Create QList&lt;T&gt; from Lua table where T is <code>int</code> <code>short</code> <code>float</code> or <code>double</code>. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">L</td><td>Lua State </td></tr>
@@ -466,7 +481,8 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
-<p>Create QVector&lt;T&gt; from Lua table where T is <code>int</code> <code>short</code> <code>float</code> or <code>double</code> </p>
+
+<p>QVector&lt;T&gt; from Lua table where T is <code>int</code> <code>short</code> <code>float</code> or <code>double</code>. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">L</td><td>Lua State </td></tr>
@@ -501,6 +517,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create QStringList from Lua table. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -536,6 +553,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create QVariantList from Lua table. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -571,6 +589,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create Lua table from QStringList and push it on the Lua stack. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -582,12 +601,12 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a2be4fe6216f8f6690c23d7c63e02be61"></a><!-- doxytag: member="qlua::VariantListToLuaTable" ref="a2be4fe6216f8f6690c23d7c63e02be61" args="(const QVariantList &amp;, lua_State *)" -->
+<a class="anchor" id="a85a31ceded331bf95be77c8772fb4b7b"></a><!-- doxytag: member="qlua::VariantListToLuaTable" ref="a85a31ceded331bf95be77c8772fb4b7b" args="(const QVariantList &amp;vl, lua_State *L)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="namespaceqlua.html#a2be4fe6216f8f6690c23d7c63e02be61">qlua::VariantListToLuaTable</a> </td>
+          <td class="memname">void <a class="el" href="namespaceqlua.html#a85a31ceded331bf95be77c8772fb4b7b">qlua::VariantListToLuaTable</a> </td>
           <td>(</td>
           <td class="paramtype">const QVariantList &amp;&#160;</td>
           <td class="paramname"><em>vl</em>, </td>
@@ -606,6 +625,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create Lua table from QVariantList and push it on the Lua stack. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -617,12 +637,12 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a9a22932235ec10f30240aee2b6b0cbf6"></a><!-- doxytag: member="qlua::VariantMapToLuaTable" ref="a9a22932235ec10f30240aee2b6b0cbf6" args="(const QVariantMap &amp;, lua_State *)" -->
+<a class="anchor" id="a2e62b33b667ddd39efb977140e473781"></a><!-- doxytag: member="qlua::VariantMapToLuaTable" ref="a2e62b33b667ddd39efb977140e473781" args="(const QVariantMap &amp;vm, lua_State *L)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="namespaceqlua.html#a9a22932235ec10f30240aee2b6b0cbf6">qlua::VariantMapToLuaTable</a> </td>
+          <td class="memname">void <a class="el" href="namespaceqlua.html#a2e62b33b667ddd39efb977140e473781">qlua::VariantMapToLuaTable</a> </td>
           <td>(</td>
           <td class="paramtype">const QVariantMap &amp;&#160;</td>
           <td class="paramname"><em>vm</em>, </td>
@@ -641,6 +661,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create Lua table from QVariantMap and push it on the Lua stack. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -676,6 +697,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div>
 <div class="memdoc">
+
 <p>Create Lua value from QVariant and push it on the Lua stack. </p>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
@@ -705,7 +727,7 @@ template&lt;typename T &gt; </div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 13 2012 18:43:33 for QLua by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 13 2012 18:56:52 for QLua by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
