@@ -1,5 +1,5 @@
 <map id="G" name="G">
-<area shape="rect" id="node3" href="$LuaArguments_8h.html" title="Declarations and definitions of constructors for creating C++ values from Lua values." alt="" coords="105,80,223,107"/>
-<area shape="rect" id="node7" href="$LuaContext_8h.html" title="Lua context: Create new or wrap existing Lua state." alt="" coords="160,229,259,256"/>
-<area shape="rect" id="node5" href="$LuaCallbackDispatcher_8h.html" title="Qt signals to Lua callback functions." alt="" coords="5,155,171,181"/>
+<area shape="rect" id="node3" href="$LuaArguments_8h.html" title="Declarations and definitions of constructors for creating C++ values from Lua values." alt="" coords="107,83,224,112"/>
+<area shape="rect" id="node7" href="$LuaContext_8h.html" title="Lua context: Create new or wrap existing Lua state." alt="" coords="161,237,260,267"/>
+<area shape="rect" id="node5" href="$LuaCallbackDispatcher_8h.html" title="Qt signals to Lua callback functions." alt="" coords="5,160,173,189"/>
 </map>

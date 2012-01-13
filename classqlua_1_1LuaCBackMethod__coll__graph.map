@@ -1,0 +1,4 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$classqlua_1_1LuaContext.html" title="Lua context. Either create a new context or wrap an existing one." alt="" coords="145,6,321,941"/>
+<area shape="rect" id="node4" href="$classqlua_1_1LuaCallbackDispatcher.html" title="Manages Lua function invocation through Qt signals. And connection of Qt signals to Lua functions or ..." alt="" coords="187,1008,376,1232"/>
+</map>
