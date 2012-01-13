@@ -380,7 +380,7 @@ public:
     virtual LArgConstructor* Clone() const = 0;
     /// Return type of constructed data.
     virtual QMetaType::Type Type() const = 0;
-    /// @briefReturn QGenericReturnArguments holding a reference to the
+    /// @brief Return QGenericReturnArguments holding a reference to the
     /// memory location where the returned value is stored.
     QGenericReturnArgument Argument() const { return ga_; }
     /// @brief Return @c true if type is a pointer to a QObject-derived object.

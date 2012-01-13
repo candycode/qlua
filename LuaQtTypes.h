@@ -186,6 +186,9 @@ QVector< T > ParseLuaTableAsNumberVector( lua_State* L, int stackTableIndex ) {
 /// Create QVariantMap from Lua table.
 /// @param L Lua State
 /// @param stackTableIndex index of table in Lua stack
+/// @param removeTable if @ true table is removed from stack, this is useful
+///        when revursively invoking the function to guarantee that after it
+///        returns no table is left on the stack. 
 inline
 QVariantMap ParseLuaTable( lua_State* L, int stackTableIndex, bool removeTable = true ) {
     luaL_checktype( L, stackTableIndex, LUA_TTABLE );
@@ -208,7 +211,7 @@ QVariantMap ParseLuaTable( lua_State* L, int stackTableIndex, bool removeTable =
 /// @param L Lua State
 /// @param stackTableIndex index of table in Lua stack
 inline
-QVariantList ParseLuaTableAsVariantList( lua_State* L, int stackTableIndex, bool removeTable = true ) {
+QVariantList ParseLuaTableAsVariantList( lua_State* L, int stackTableIndex ) {
     luaL_checktype( L, stackTableIndex, LUA_TTABLE );
     QVariantList l;
     lua_pushnil(L);  // first key
@@ -220,7 +223,6 @@ QVariantList ParseLuaTableAsVariantList( lua_State* L, int stackTableIndex, bool
         l.push_back( value );
         lua_pop(L, 1);
     }
-    if( removeTable ) lua_pop( L, 1 ); // remvove table
     return l;
 }
 
@@ -263,7 +265,7 @@ void VariantToLuaValue( const QVariant& v, lua_State* L ) {
 
 //------------------------------------------------------------------------------
 /// Create Lua table from QVariantMap and push it on the Lua stack.
-/// @param v QVariant
+/// @param vm QVariantMap
 /// @param L Lua state
 inline
 void VariantMapToLuaTable( const QVariantMap& vm, lua_State* L ) {
@@ -276,7 +278,7 @@ void VariantMapToLuaTable( const QVariantMap& vm, lua_State* L ) {
 }
 //------------------------------------------------------------------------------
 /// Create Lua table from QVariantList and push it on the Lua stack.
-/// @param v QVariant
+/// @param vl QVariantList
 /// @param L Lua state
 inline
 void VariantListToLuaTable( const QVariantList& vl, lua_State* L ) {
@@ -290,39 +292,39 @@ void VariantListToLuaTable( const QVariantList& vl, lua_State* L ) {
 }
 //------------------------------------------------------------------------------
 /// Create Lua table from QList<T> where T is a number and push it on the Lua stack.
-/// @param v QVariant
+/// @param l QList
 /// @param L Lua state
 template < typename T >
-void NumberListToLuaTable( const QList< T >& vl, lua_State* L ) {
+void NumberListToLuaTable( const QList< T >& l, lua_State* L ) {
     lua_newtable( L ); 
     int i = 1;
-    for( typename QList< T >::const_iterator v = vl.begin(); v != vl.end(); ++v, ++i ) {
+    for( typename QList< T >::const_iterator v = l.begin(); v != l.end(); ++v, ++i ) {
         lua_pushnumber( L, *v );
         lua_rawseti( L, -2, i );
     }
 }
 //------------------------------------------------------------------------------
 /// Create Lua table from QVector<T> where T is a number and push it on the Lua stack.
-/// @param v QVariant
+/// @param v QVector
 /// @param L Lua state
 template < typename T >
-void NumberVectorToLuaTable( const QVector< T >& vl, lua_State* L ) {
+void NumberVectorToLuaTable( const QVector< T >& v, lua_State* L ) {
     lua_newtable( L ); 
     int i = 1;
-    for( typename QVector< T >::const_iterator v = vl.begin(); v != vl.end(); ++v, ++i ) {
-        lua_pushnumber( L, *v );
+    for( typename QVector< T >::const_iterator vi = v.begin(); vi != v.end(); ++vi, ++i ) {
+        lua_pushnumber( L, *vi );
         lua_rawseti( L, -2, i );
     }
 }
 //------------------------------------------------------------------------------
 /// Create Lua table from QStringList and push it on the Lua stack.
-/// @param v QVariant
+/// @param sl QStringList
 /// @param L Lua state
 inline
-void StringListToLuaTable( const QStringList& vl, lua_State* L ) {
+void StringListToLuaTable( const QStringList& sl, lua_State* L ) {
     lua_newtable( L ); 
     int i = 1;
-    for( QStringList::const_iterator v = vl.begin(); v != vl.end(); ++v, ++i ) {
+    for( QStringList::const_iterator v = sl.begin(); v != sl.end(); ++v, ++i ) {
         lua_pushinteger( L, i );
         lua_pushstring( L, v->toAscii().constData() );
         lua_rawset( L, -3 );

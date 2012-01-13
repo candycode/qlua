@@ -123,14 +123,14 @@ public:
         if( name ) lua_setglobal( L_, name );
     }
     /// @brief Add QStringList: Either push it on the stack or set it as global.
-    /// @param vl QStringList
+    /// @param sl QStringList
     /// @param name global name; if null value is left on the Lua stack.
     void AddQStringList( const QStringList& sl, const char* name = 0 ){     
         StringListToLuaTable( sl, L_ );
         if( name ) lua_setglobal( L_, name );
     }
     /// @brief Add QList of numeric values: Either push it on the stack or set it as global.
-    /// @param vl QStringList
+    /// @param l QList
     /// @param name global name; if null value is left on the Lua stack.
     template < typename T > void AddQList( const QList< T >& l, const char* name = 0 ) {     
         NumberListToLuaTable< T >( l, L_ );
