@@ -4,6 +4,9 @@ QLua
 QLua is a binding between lua 5.1/5.2/luajit and Qt(tested with versions 
 4.7 and 4.8).
 
+http://candycode.github.com/qlua
+
+
 License & Copyright
 -------------------
 
@@ -12,6 +15,7 @@ BSD three-clause license (i.e. do what you want with it, just please add
 copyright information).
 Complete license information is included in the file 'LICENSE', part of this 
 source code distribution.
+
 
 Features
 --------
