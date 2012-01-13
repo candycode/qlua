@@ -63,7 +63,50 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="contents">
 <div class="textblock"><p>QLua is a Qt &lt;--&gt; Lua binding framework.</p>
-<p>QObjects are exposed to Lua as tables with values matching QObject properties and callable methods declared as signals, slots or <code>Q_INVOKABLE</code>. </p>
+<p>QObjects are exposed to Lua as tables with values matching QObject properties and callable methods declared as signals, slots or <code>Q_INVOKABLE</code>.</p>
+<p>The public interface is defined in the <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">qlua::LuaContext</a> class.</p>
+<h2><a class="anchor" id="Usage"></a>
+Usage</h2>
+<p>QLua is used to access exported QObject methods and properties from Lua and to connect QObject signals to Lua functions or QObject slots.</p>
+<h3><a class="anchor" id="Initialization"></a>
+Initialization</h3>
+<p>Create or wrap  through <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">qlua::LuaContext</a> constructor. Add QObjects with <a class="el" href="classqlua_1_1LuaContext.html#a1028614d809ead6abd6ef856d4c42754" title="Add QObject to Lua context as a Lua table.">qlua::LuaContext::AddQObject</a> method.</p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor">#include &lt;<a class="code" href="LuaContext_8h.html" title="Lua context: Creates or wraps an existing Lua state.">LuaContext.h</a>&gt;</span>
+...
+using <span class="keyword">namespace </span>qlua;
+...
+LuaContext lc;  <span class="comment">// create a new lua_State</span>
+LuaContext lcw( luaStatePtr ) ; <span class="comment">// wraps an existing lua_State</span>
+...
+MyQObject myobj;
+lc.AddQObject( &amp;myobj, <span class="stringliteral">&quot;myobj&quot;</span> ); <span class="comment">// add MyQObject instance to lua_State</span>
+...
+</pre></div><h3><a class="anchor" id="MethodInvocation"></a>
+Method invocation</h3>
+<p>Each QObject is added to Lua as a table, with the name specified in the <a class="el" href="classqlua_1_1LuaContext.html#a1028614d809ead6abd6ef856d4c42754" title="Add QObject to Lua context as a Lua table.">qlua::LuaContext::AddQObject</a> method invocation. You invoke a method from Lua as a function stored inside a table.</p>
+<div class="fragment"><pre class="fragment">myobj.aMethod(<span class="stringliteral">&#39;anArgument&#39;</span>);
+</pre></div><h3><a class="anchor" id="Signals"></a>
+Signals</h3>
+<p>Signals can be connected to</p>
+<ol type="1">
+<li>Lua functions</li>
+<li>QObject methods</li>
+</ol>
+<p>In the case of (1) a function is passed as the endpoint of a signal connection. (2) requires both a target QObject and a method signature.</p>
+<p>QObjects are passed to the <code>qlua.connect</code> function as QObject instances previously added through <a class="el" href="classqlua_1_1LuaContext.html#a1028614d809ead6abd6ef856d4c42754" title="Add QObject to Lua context as a Lua table.">qlua::LuaContext::AddQObject</a> or as pointers added to Lua by calling <code>lua_pushlightuserdata</code>.</p>
+<div class="fragment"><pre class="fragment">qlua.connect( myobj, <span class="stringliteral">&#39;aSignal(QString)&#39;</span>,
+              function( msg ) print( msg ) end );
+myobj.emitSignal( <span class="stringliteral">&#39;hello&#39;</span> ); 
+</pre></div><h2><a class="anchor" id="MemoryManagement"></a>
+Memory management</h2>
+<p>QObjects added to Lua with <a class="el" href="classqlua_1_1LuaContext.html#a1028614d809ead6abd6ef856d4c42754" title="Add QObject to Lua context as a Lua table.">qlua::LuaContext::AddQObject</a> are not garbage collected by default.</p>
+<p>To have a QObject deleted when the Lua table is garbage collected set the value of the @ deleteMode parameter in the invocation of <a class="el" href="classqlua_1_1LuaContext.html#a1028614d809ead6abd6ef856d4c42754" title="Add QObject to Lua context as a Lua table.">qlua::LuaContext::AddQObject</a> to one of:</p>
+<ul>
+<li>QOBJ_IMMEDIATE_DELETE to have the QObject instance deleted with </li>
+<li>QOBJ_DELETE_LATER to have the QObject instance deleted through <code>QObject::deleteLater</code> </li>
+</ul>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb" title="Delete mode: Specify how/if object shall be garbage collected.">qlua::LuaContext::ObjectDeleteMode</a></dd></dl>
+<p>The <code>deleteMode</code> parameter will be replaced in the future with a custom deleter. </p>
 </div></div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -79,7 +122,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 13 2012 11:41:21 for QLua by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 13 2012 14:33:25 for QLua by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>
