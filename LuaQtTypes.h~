@@ -284,7 +284,7 @@ void VariantMapToLuaTable( const QVariantMap& vm, lua_State* L ) {
     }
 }
 //------------------------------------------------------------------------------
-/// @brief Create Lua table from QVariantList and push it on the Lua stack.
+/// Create Lua table from QVariantList and push it on the Lua stack.
 ///
 /// @param vl QVariantList
 /// @param L Lua state
@@ -299,7 +299,7 @@ void VariantListToLuaTable( const QVariantList& vl, lua_State* L ) {
     }
 }
 //------------------------------------------------------------------------------
-/// @brief Create Lua table from QList<T> where T is a number and push it on the Lua stack.
+/// Create Lua table from QList<T> where T is a number and push it on the Lua stack.
 ///
 /// @param l QList
 /// @param L Lua state
@@ -313,7 +313,7 @@ void NumberListToLuaTable( const QList< T >& l, lua_State* L ) {
     }
 }
 //------------------------------------------------------------------------------
-/// @brief Create Lua table from QVector<T> where T is a number and push it on the Lua stack.
+/// Create Lua table from QVector<T> where T is a number and push it on the Lua stack.
 ///
 /// @param v QVector
 /// @param L Lua state
@@ -327,7 +327,7 @@ void NumberVectorToLuaTable( const QVector< T >& v, lua_State* L ) {
     }
 }
 //------------------------------------------------------------------------------
-/// @brief Create Lua table from QStringList and push it on the Lua stack.
+/// Create Lua table from QStringList and push it on the Lua stack.
 ///
 /// @param sl QStringList
 /// @param L Lua state
