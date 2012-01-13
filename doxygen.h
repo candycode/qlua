@@ -96,7 +96,7 @@ QObjects added to Lua with qlua::LuaContext::AddQObject are not garbage collecte
 by default.
 
 To have a QObject deleted when the Lua table is garbage collected set the value
-of the @ deleteMode parameter in the invocation of qlua::LuaContext::AddQObject to one of:
+of the @c deleteMode parameter in the invocation of qlua::LuaContext::AddQObject to one of:
   - QOBJ_IMMEDIATE_DELETE to have the QObject instance deleted with @delete
   - QOBJ_DELETE_LATER to have the QObject instance deleted through @c QObject::deleteLater
 
