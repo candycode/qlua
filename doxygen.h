@@ -1,4 +1,4 @@
-// NOT A SOURCE FILE
+// DOXYGEN FRONT PAGE
 
 //QLua - Copyright (c) 2012, Ugo Varetto
 //All rights reserved.
@@ -32,6 +32,88 @@ QLua is a Qt <--> Lua binding framework.
 QObjects are exposed to Lua as tables with values matching QObject
 properties and callable methods declared as signals, slots or
 @c Q_INVOKABLE. 
+
+The public interface is defined in the qlua::LuaContext class.
+
+@section Usage
+
+QLua is used to access exported QObject methods and properties from
+Lua and to connect QObject signals to Lua functions or QObject slots.
+
+@subsection Initialization
+
+Create or wrap @lua_State through qlua::LuaContext constructor.
+Add QObjects with qlua::LuaContext::AddQObject method.
+
+@code
+
+#include <LuaContext.h>
+...
+using namespace qlua;
+...
+LuaContext lc;  // create a new lua_State
+LuaContext lcw( luaStatePtr ) ; // wraps an existing lua_State
+...
+MyQObject myobj;
+lc.AddQObject( &myobj, "myobj" ); // add MyQObject instance to lua_State
+...
+
+@endcode
+
+@subsection MethodInvocation Method invocation
+
+Each QObject is added to Lua as a table, with the name specified in the qlua::LuaContext::AddQObject method invocation.
+You invoke a method from Lua as a function stored inside a table.
+
+@code
+myobj.aMethod('anArgument');
+@endcode
+
+@endcode
+
+@subsection Signals
+
+Signals can be connected to
+  -# Lua functions
+  -# QObject methods
+
+In the case of (1) a function is passed as the endpoint of a signal connection.
+(2) requires both a target QObject and a method signature.
+
+QObjects are passed to the @c qlua.connect function as QObject instances 
+previously added through qlua::LuaContext::AddQObject or as pointers
+added to Lua by calling @c lua_pushlightuserdata. 
+
+@code
+qlua.connect( myobj, 'aSignal(QString)',
+              function( msg ) print( msg ) end );
+myobj.emitSignal( 'hello' ); 
+@endcode
+
+@section MemoryManagement Memory management
+
+QObjects added to Lua with qlua::LuaContext::AddQObject are not garbage collected
+by default.
+
+To have a QObject deleted when the Lua table is garbage collected set the value
+of the @ deleteMode parameter in the invocation of qlua::LuaContext::AddQObject to one of:
+  - QOBJ_IMMEDIATE_DELETE to have the QObject instance deleted with @delete
+  - QOBJ_DELETE_LATER to have the QObject instance deleted through @c QObject::deleteLater
+
+@see qlua::LuaContext::ObjectDeleteMode 
+
+The @c deleteMode parameter will be replaced in the future with a custom deleter.  
+
+
+
+
+
+
+
+
+
+
+
 
 */
 

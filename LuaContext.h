@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ///@file
-///@brief Lua context: Create new or wrap existing Lua state.  
+///@brief Lua context: Creates or wraps an existing Lua state.  
 
 extern "C" {
 #include "lua.h"
@@ -67,7 +67,7 @@ inline void RaiseLuaError( lua_State* L, const std::string& errMsg ) {
 
 
 //------------------------------------------------------------------------------
-/// @brief Lua context. Either create a new context or wrap an existing one.
+/// @brief Lua context. Creates or wraps an existing Lua state.
 ///
 /// This class is the interface exposed by QLua to client code.
 /// Use the provided method to add QObjects and other types the Lua context and
