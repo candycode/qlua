@@ -42,7 +42,7 @@ Lua and to connect QObject signals to Lua functions or QObject slots.
 
 @subsection Initialization
 
-Create or wrap @lua_State through qlua::LuaContext constructor.
+Create or wrap a @c lua_State with qlua::LuaContext constructor.
 Add QObjects with qlua::LuaContext::AddQObject method.
 
 @code
