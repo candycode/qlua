@@ -131,8 +131,8 @@ void LuaContext::AddQObject( QObject* obj,
     lua_pushinteger( L_, int( deleteMode ) ); 
     lua_pushcclosure( L_, &LuaContext::DeleteObject, 3 ); // push __gc method
     lua_setfield( L_, -2, "__gc" ); // set table['__gc'] = function
-    lua_setmetatable( L_, -2 ); // set metatable QObject table
-    lua_settable( L_, -3 );
+    lua_setmetatable( L_, -2 ); // set metatable for userdata 
+    lua_settable( L_, -3 ); // table['qobject__']= <user data> == QObject*
 
     // properties
     for( int i = 0; i != mo->propertyCount(); ++i ) {
