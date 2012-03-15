@@ -104,17 +104,6 @@ of the @c deleteMode parameter in the invocation of qlua::LuaContext::AddQObject
 
 The @c deleteMode parameter will be replaced in the future with a custom deleter.  
 
-
-
-
-
-
-
-
-
-
-
-
 */
 
 

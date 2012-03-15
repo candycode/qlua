@@ -77,7 +77,7 @@ void LuaContext::AddQObject( QObject* obj,
     
     // if object already present push its associated table on the stack
     // and return
-    if( cache && objRefs_.contains( obj ) ) {
+    if( objRefs_.contains( obj ) ) {
         lua_rawgeti( L_, LUA_REGISTRYINDEX, objRefs_[ obj ] );
         if( tableName ) lua_setglobal( L_, tableName ); 
         return;

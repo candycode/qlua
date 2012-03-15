@@ -171,6 +171,10 @@ since basically in the situation depicted above all numbers without a mantissa
 would automatically be passed to the (int) method and the others to the (double)
 one, which might or might not be correct.
 
+It is possible to use custom mappers to translate overloaded methods to different
+Lua functions. Have a look at the qlua::ILuaSignatureMapper and
+qlua::LuaDefaultSignatureMapper classes for an explanation of the exposed interface.
+
 
 Todo
 ----
