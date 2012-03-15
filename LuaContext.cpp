@@ -82,7 +82,6 @@ void LuaContext::AddQObject( QObject* obj,
         if( tableName ) lua_setglobal( L_, tableName ); 
         return;
     }
-    
     // create sets to filter methods/types
     QSet< QString > mn;
     QSet< QMetaMethod::MethodType > mt;
