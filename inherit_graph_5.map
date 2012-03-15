@@ -1,15 +1,3 @@
 <map id="G" name="G">
-<area shape="rect" id="node1" href="$structqlua_1_1QArgConstructor.html" title="Interface for constructor objects which generate C++ values from Lua values read from the Lua stack..." alt="" coords="5,299,157,328"/>
-<area shape="rect" id="node3" href="$classqlua_1_1DoubleQArgConstructor.html" title="QArgConstructor implementation for double type." alt="" coords="221,5,413,35"/>
-<area shape="rect" id="node5" href="$classqlua_1_1FloatQArgConstructor.html" title="QArgConstructor implementation for float type." alt="" coords="227,59,408,88"/>
-<area shape="rect" id="node7" href="$classqlua_1_1IntQArgConstructor.html" title="QArgConstructor implementation for integer type." alt="" coords="235,112,400,141"/>
-<area shape="rect" id="node9" href="$classqlua_1_1ListQArgConstructor.html" title="QArgConstructor implementation for QList&lt;T&gt; type." alt="" coords="215,165,420,195"/>
-<area shape="rect" id="node11" href="$classqlua_1_1ObjectStarQArgConstructor.html" title="QArgConstructor implementation for QObject* type." alt="" coords="211,219,424,248"/>
-<area shape="rect" id="node13" href="$classqlua_1_1StringListQArgConstructor.html" title="QArgConstructor implementation for QStringList type." alt="" coords="215,272,420,301"/>
-<area shape="rect" id="node15" href="$classqlua_1_1StringQArgConstructor.html" title="QArgConstructor implementation for QString type." alt="" coords="224,325,411,355"/>
-<area shape="rect" id="node17" href="$classqlua_1_1VariantListQArgConstructor.html" title="QArgConstructor implementation for QVariantList type." alt="" coords="211,379,424,408"/>
-<area shape="rect" id="node19" href="$classqlua_1_1VariantMapQArgConstructor.html" title="QArgConstructor implementation for QVariantMap type." alt="" coords="208,432,427,461"/>
-<area shape="rect" id="node21" href="$classqlua_1_1VectorQArgConstructor.html" title="QArgConstructor implementation for QVector&lt;T&gt; type." alt="" coords="207,485,428,515"/>
-<area shape="rect" id="node23" href="$classqlua_1_1VoidStarQArgConstructor.html" title="QArgConstructor implementation for void* type." alt="" coords="216,539,419,568"/>
-<area shape="rect" id="node25" href="$classqlua_1_1WidgetStarQArgConstructor.html" title="QArgConstructor implementation for QWidget* type." alt="" coords="209,592,425,621"/>
+<area shape="rect" id="node1" href="$classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state." alt="" coords="7,5,127,35"/>
 </map>

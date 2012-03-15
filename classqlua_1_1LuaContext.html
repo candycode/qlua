@@ -124,8 +124,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqlua_1_1LuaContext.html#ab43bf823cc907251fe6a791e763c268c">AddQList</a> (const QList&lt; T &gt; &amp;l, const char *name=0)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add QList of numeric values: Either push it on the stack or set it as global.  <a href="#ab43bf823cc907251fe6a791e763c268c"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqlua_1_1LuaContext.html#a1028614d809ead6abd6ef856d4c42754">AddQObject</a> (QObject *obj, const char *tableName=0, bool cache=false, <a class="el" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb">ObjectDeleteMode</a> deleteMode=QOBJ_NO_DELETE, const QStringList &amp;methodNames=QStringList(), const QList&lt; QMetaMethod::MethodType &gt; &amp;methodTypes=QList&lt; QMetaMethod::MethodType &gt;())</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add QObject to Lua context as a Lua table.  <a href="#a1028614d809ead6abd6ef856d4c42754"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqlua_1_1LuaContext.html#ab532f8d4660224cab75e320e59c2eacb">AddQObject</a> (QObject *obj, const char *tableName=0, bool cache=false, <a class="el" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb">ObjectDeleteMode</a> deleteMode=QOBJ_NO_DELETE, const <a class="el" href="structILuaSignatureMapper.html">ILuaSignatureMapper</a> &amp;mapper=<a class="el" href="structqlua_1_1LuaDefaultSignatureMapper.html">LuaDefaultSignatureMapper</a>(), const QStringList &amp;methodNames=QStringList(), const QList&lt; QMetaMethod::MethodType &gt; &amp;methodTypes=QList&lt; QMetaMethod::MethodType &gt;())</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Add QObject to Lua context as a Lua table.  <a href="#ab532f8d4660224cab75e320e59c2eacb"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqlua_1_1LuaContext.html#a4f2ef9926b554b052b4099a661efe6a4">OwnQObjects</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return value of global garbage collection policy.  <a href="#a4f2ef9926b554b052b4099a661efe6a4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1231f60aabb9f2b339edbfee92f3b92"></a><!-- doxytag: member="qlua::LuaContext::~LuaContext" ref="ac1231f60aabb9f2b339edbfee92f3b92" args="()" -->
@@ -228,7 +228,7 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a1028614d809ead6abd6ef856d4c42754"></a><!-- doxytag: member="qlua::LuaContext::AddQObject" ref="a1028614d809ead6abd6ef856d4c42754" args="(QObject *obj, const char *tableName=0, bool cache=false, ObjectDeleteMode deleteMode=QOBJ_NO_DELETE, const QStringList &amp;methodNames=QStringList(), const QList&lt; QMetaMethod::MethodType &gt; &amp;methodTypes=QList&lt; QMetaMethod::MethodType &gt;())" -->
+<a class="anchor" id="ab532f8d4660224cab75e320e59c2eacb"></a><!-- doxytag: member="qlua::LuaContext::AddQObject" ref="ab532f8d4660224cab75e320e59c2eacb" args="(QObject *obj, const char *tableName=0, bool cache=false, ObjectDeleteMode deleteMode=QOBJ_NO_DELETE, const ILuaSignatureMapper &amp;mapper=LuaDefaultSignatureMapper(), const QStringList &amp;methodNames=QStringList(), const QList&lt; QMetaMethod::MethodType &gt; &amp;methodTypes=QList&lt; QMetaMethod::MethodType &gt;())" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -255,6 +255,12 @@ template&lt;typename T &gt; </div>
           <td></td>
           <td class="paramtype"><a class="el" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb">ObjectDeleteMode</a>&#160;</td>
           <td class="paramname"><em>deleteMode</em> = <code>QOBJ_NO_DELETE</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structILuaSignatureMapper.html">ILuaSignatureMapper</a> &amp;&#160;</td>
+          <td class="paramname"><em>mapper</em> = <code><a class="el" href="structqlua_1_1LuaDefaultSignatureMapper.html">LuaDefaultSignatureMapper</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -287,6 +293,7 @@ template&lt;typename T &gt; </div>
     <tr><td class="paramname">obj</td><td>QObject </td></tr>
     <tr><td class="paramname">tableName</td><td>global name of Lua table wrapping object; if null object is left on stack </td></tr>
     <tr><td class="paramname">cache</td><td>if true object won't be re-added to <a class="el" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>. If <code>tableName</code> is not null a new global variable pointing at the previoulsy added object will be added. </td></tr>
+    <tr><td class="paramname">mapper</td><td>maps signature string to Lua method name; this allows to convert overloaed methods to different Lua functions. </td></tr>
     <tr><td class="paramname">deleteMode</td><td>choose how/if object shall be garbage collected; </td></tr>
   </table>
   </dd>
@@ -450,7 +457,7 @@ template&lt;typename T &gt; </div>
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Mar 15 2012 12:38:45 for QLua by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Thu Mar 15 2012 16:16:54 for QLua by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

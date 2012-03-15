@@ -109,162 +109,170 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00043"></a>00043 <span class="preprocessor">#include &lt;QStringList&gt;</span>
 <a name="l00044"></a>00044 
 <a name="l00045"></a>00045 <span class="preprocessor">#include &quot;<a class="code" href="LuaCallbackDispatcher_8h.html" title="Qt signals to Lua callback functions.">LuaCallbackDispatcher.h</a>&quot;</span>
-<a name="l00046"></a>00046 
-<a name="l00047"></a>00047 <span class="preprocessor">#include &quot;<a class="code" href="LuaArguments_8h.html" title="Declarations and definitions of constructors for creating C++ values from Lua values.">LuaArguments.h</a>&quot;</span>
-<a name="l00048"></a>00048 <span class="preprocessor">#include &quot;<a class="code" href="LuaQtTypes_8h.html" title="Utility functions for converting data types between Lua and Qt.">LuaQtTypes.h</a>&quot;</span>
+<a name="l00046"></a>00046 <span class="preprocessor">#include &quot;<a class="code" href="LuaArguments_8h.html" title="Declarations and definitions of constructors for creating C++ values from Lua values.">LuaArguments.h</a>&quot;</span>
+<a name="l00047"></a>00047 <span class="preprocessor">#include &quot;<a class="code" href="LuaQtTypes_8h.html" title="Utility functions for converting data types between Lua and Qt.">LuaQtTypes.h</a>&quot;</span>
+<a name="l00048"></a>00048 <span class="preprocessor">#include &quot;ILuaSignatureMapper.h&quot;</span>
 <a name="l00049"></a>00049 
-<a name="l00050"></a>00050 
-<a name="l00051"></a>00051 <span class="preprocessor">#define QLUA_VERSION &quot;0.2&quot;</span>
-<a name="l00052"></a>00052 <span class="preprocessor"></span><span class="preprocessor">#define QLUA_VERSION_MAJ 0</span>
-<a name="l00053"></a>00053 <span class="preprocessor"></span><span class="preprocessor">#define QLUA_VERSION_MIN 2</span>
-<a name="l00054"></a>00054 <span class="preprocessor"></span>
-<a name="l00055"></a>00055 <span class="keyword">namespace </span>qlua {
-<a name="l00056"></a>00056 
-<a name="l00057"></a>00057 <span class="keyword">inline</span> <span class="keywordtype">void</span> RaiseLuaError( lua_State* L, <span class="keyword">const</span> <span class="keywordtype">char</span>* errMsg ) {
-<a name="l00058"></a>00058     lua_pushstring( L, errMsg );
-<a name="l00059"></a>00059     lua_error( L );
-<a name="l00060"></a>00060 }
-<a name="l00061"></a>00061 <span class="keyword">inline</span> <span class="keywordtype">void</span> RaiseLuaError( lua_State* L, <span class="keyword">const</span> QString&amp; errMsg ) {
-<a name="l00062"></a>00062     RaiseLuaError( L, errMsg.toAscii().constData() );
-<a name="l00063"></a>00063 }
-<a name="l00064"></a>00064 <span class="keyword">inline</span> <span class="keywordtype">void</span> RaiseLuaError( lua_State* L, <span class="keyword">const</span> std::string&amp; errMsg ) {
-<a name="l00065"></a>00065     RaiseLuaError( L, errMsg.c_str() );
-<a name="l00066"></a>00066 }
-<a name="l00067"></a>00067 
-<a name="l00068"></a>00068 
-<a name="l00069"></a>00069 <span class="comment">//------------------------------------------------------------------------------</span>
-<a name="l00077"></a><a class="code" href="classqlua_1_1LuaContext.html">00077</a> <span class="comment"></span><span class="keyword">class </span><a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a> {
-<a name="l00084"></a>00084     <span class="keyword">struct </span>Method {
-<a name="l00085"></a>00085         QObject* obj_;
-<a name="l00086"></a>00086         QMetaMethod metaMethod_;
-<a name="l00087"></a>00087         QArgWrappers argumentWrappers_;
-<a name="l00088"></a>00088         <a class="code" href="classqlua_1_1LArgWrapper.html" title="Wrapper for objects returned from QObject method invocation or passes to Lua callbacks in response to...">LArgWrapper</a> returnWrapper_;
-<a name="l00089"></a>00089         Method( QObject* obj, <span class="keyword">const</span> QMetaMethod&amp; mm, <span class="keyword">const</span> QArgWrappers&amp; pw, <span class="keyword">const</span> <a class="code" href="classqlua_1_1LArgWrapper.html" title="Wrapper for objects returned from QObject method invocation or passes to Lua callbacks in response to...">LArgWrapper</a>&amp; rw ) :
-<a name="l00090"></a>00090         obj_( obj ), metaMethod_( mm ), argumentWrappers_( pw ), returnWrapper_( rw ) {}
-<a name="l00091"></a>00091     };
-<a name="l00092"></a>00092 <span class="keyword">public</span>:
-<a name="l00094"></a><a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb">00094</a>     <span class="keyword">enum</span> <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb" title="Delete mode: Specify how/if object shall be garbage collected.">ObjectDeleteMode</a> { 
-<a name="l00095"></a><a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad2d712e7dcb13878e4e2157ee4b7c50d">00095</a>         <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad2d712e7dcb13878e4e2157ee4b7c50d" title="Lifetime not managed by Lua; never garbage collected.">QOBJ_NO_DELETE</a>, 
-<a name="l00096"></a><a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eba717b0e95a25bdbb0dde634432bab5301">00096</a>         <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eba717b0e95a25bdbb0dde634432bab5301" title="Garbage collected: delete used.">QOBJ_IMMEDIATE_DELETE</a>, 
-<a name="l00097"></a><a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad652803d2a1049284dd83e4f64655b20">00097</a>         <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad652803d2a1049284dd83e4f64655b20" title="Garbage collected: QObject::deleteLater() used.">QOBJ_DELETE_LATER</a> 
-<a name="l00098"></a>00098     };
-<a name="l00099"></a>00099     <span class="keyword">typedef</span> QList&lt; Method &gt; Methods;
-<a name="l00100"></a>00100     <span class="keyword">typedef</span> QMap&lt; QObject*, QMap&lt; QString, Methods &gt; &gt; ObjectMethodMap;
-<a name="l00101"></a>00101     <span class="keyword">typedef</span> QMap&lt; QObject*, int &gt; ObjectReferenceMap;
-<a name="l00104"></a>00104     <a class="code" href="classqlua_1_1LuaContext.html#ac30a16cb34da2f3c811984c4505d58dd">LuaContext</a>( lua_State* L = 0 ); 
-<a name="l00106"></a><a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225">00106</a>     lua_State* <a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> L_; }
-<a name="l00108"></a><a class="code" href="classqlua_1_1LuaContext.html#af7326b49b3440911e84cf20452890969">00108</a>     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#af7326b49b3440911e84cf20452890969" title="Evaluate Lua code.">Eval</a>( <span class="keyword">const</span> <span class="keywordtype">char</span>* code ) {
-<a name="l00109"></a>00109         ReportErrors( luaL_dostring( L_, code ) );
-<a name="l00110"></a>00110     }
-<a name="l00114"></a><a class="code" href="classqlua_1_1LuaContext.html#a0439d1cf700c69c96cd649c099fbd65b">00114</a>     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#a0439d1cf700c69c96cd649c099fbd65b" title="Add QVariantMap: Either push it on the stack or set it as global.">AddQVariantMap</a>( <span class="keyword">const</span> QVariantMap&amp; vm, <span class="keyword">const</span> <span class="keywordtype">char</span>* name = 0 ) {        
-<a name="l00115"></a>00115         <a class="code" href="namespaceqlua.html#a2e62b33b667ddd39efb977140e473781" title="Create Lua table from QVariantMap and push it on the Lua stack.">VariantMapToLuaTable</a>( vm, L_ );
-<a name="l00116"></a>00116         <span class="keywordflow">if</span>( name ) lua_setglobal( L_, name );
-<a name="l00117"></a>00117     }
-<a name="l00121"></a><a class="code" href="classqlua_1_1LuaContext.html#a67bf8308d9fac5a1ec8f1aa30bdc34ba">00121</a>     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#a67bf8308d9fac5a1ec8f1aa30bdc34ba" title="Add QVariantList: Either push it on the stack or set it as global.">AddQVariantList</a>( <span class="keyword">const</span> QVariantList&amp; vl, <span class="keyword">const</span> <span class="keywordtype">char</span>* name = 0 ) {      
-<a name="l00122"></a>00122         <a class="code" href="namespaceqlua.html#a85a31ceded331bf95be77c8772fb4b7b" title="Create Lua table from QVariantList and push it on the Lua stack.">VariantListToLuaTable</a>( vl, L_ );
-<a name="l00123"></a>00123         <span class="keywordflow">if</span>( name ) lua_setglobal( L_, name );
-<a name="l00124"></a>00124     }
-<a name="l00128"></a><a class="code" href="classqlua_1_1LuaContext.html#a718dc6321d0bdc0540eba7a54ea9e046">00128</a>     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#a718dc6321d0bdc0540eba7a54ea9e046" title="Add QStringList: Either push it on the stack or set it as global.">AddQStringList</a>( <span class="keyword">const</span> QStringList&amp; sl, <span class="keyword">const</span> <span class="keywordtype">char</span>* name = 0 ){     
-<a name="l00129"></a>00129         <a class="code" href="namespaceqlua.html#a09d459eb28c095b3c8719285a22ea000" title="Create Lua table from QStringList and push it on the Lua stack.">StringListToLuaTable</a>( sl, L_ );
-<a name="l00130"></a>00130         <span class="keywordflow">if</span>( name ) lua_setglobal( L_, name );
-<a name="l00131"></a>00131     }
-<a name="l00135"></a><a class="code" href="classqlua_1_1LuaContext.html#ab43bf823cc907251fe6a791e763c268c">00135</a>     <span class="keyword">template</span> &lt; <span class="keyword">typename</span> T &gt; <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#ab43bf823cc907251fe6a791e763c268c" title="Add QList of numeric values: Either push it on the stack or set it as global.">AddQList</a>( <span class="keyword">const</span> QList&lt; T &gt;&amp; l, <span class="keyword">const</span> <span class="keywordtype">char</span>* name = 0 ) {     
-<a name="l00136"></a>00136         NumberListToLuaTable&lt; T &gt;( l, L_ );
-<a name="l00137"></a>00137         <span class="keywordflow">if</span>( name ) lua_setglobal( L_, name );
-<a name="l00138"></a>00138     }
-<a name="l00155"></a>00155     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#a1028614d809ead6abd6ef856d4c42754" title="Add QObject to Lua context as a Lua table.">AddQObject</a>( QObject* obj, 
-<a name="l00156"></a>00156                      <span class="keyword">const</span> <span class="keywordtype">char</span>* tableName = 0,
-<a name="l00157"></a>00157                      <span class="keywordtype">bool</span> cache = <span class="keyword">false</span>, 
-<a name="l00158"></a>00158                      <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb" title="Delete mode: Specify how/if object shall be garbage collected.">ObjectDeleteMode</a> deleteMode = <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad2d712e7dcb13878e4e2157ee4b7c50d" title="Lifetime not managed by Lua; never garbage collected.">QOBJ_NO_DELETE</a>,
-<a name="l00159"></a>00159                      <span class="keyword">const</span> QStringList&amp; methodNames = QStringList(),
-<a name="l00160"></a>00160                      <span class="keyword">const</span> QList&lt; QMetaMethod::MethodType &gt;&amp; methodTypes =
-<a name="l00161"></a>00161                            QList&lt; QMetaMethod::MethodType &gt;()  );
-<a name="l00167"></a><a class="code" href="classqlua_1_1LuaContext.html#a4f2ef9926b554b052b4099a661efe6a4">00167</a>     <span class="keywordtype">bool</span> <a class="code" href="classqlua_1_1LuaContext.html#a4f2ef9926b554b052b4099a661efe6a4" title="Return value of global garbage collection policy.">OwnQObjects</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ownQObjects_; }
-<a name="l00169"></a><a class="code" href="classqlua_1_1LuaContext.html#ac1231f60aabb9f2b339edbfee92f3b92">00169</a>     <a class="code" href="classqlua_1_1LuaContext.html#ac1231f60aabb9f2b339edbfee92f3b92" title="Destructor: Destroys Lua state if owned by this object.">~LuaContext</a>() {
-<a name="l00170"></a>00170         <span class="keywordflow">if</span>( !wrappedContext_ ) lua_close( L_ );
-<a name="l00171"></a>00171     }
-<a name="l00172"></a>00172 <span class="keyword">private</span>:
-<a name="l00174"></a>00174     <span class="keywordtype">void</span> RemoveObject( QObject* obj );
-<a name="l00176"></a>00176 
-<a name="l00177"></a>00177 
-<a name="l00178"></a>00178     <span class="keyword">static</span> <span class="keywordtype">int</span> QtConnect( lua_State* L );
-<a name="l00180"></a>00180     <span class="keyword">static</span> <span class="keywordtype">int</span> QtDisconnect( lua_State* L );
-<a name="l00185"></a>00185     <span class="keyword">static</span> <span class="keywordtype">int</span> InvokeMethod( lua_State* L );
-<a name="l00187"></a>00187     <span class="keyword">static</span> <span class="keywordtype">int</span> DeleteObject( lua_State* L );
-<a name="l00189"></a>00189     <span class="keyword">static</span> <span class="keywordtype">int</span> SetQObjectsOwnership( lua_State* L );
+<a name="l00050"></a>00050 <span class="preprocessor">#define QLUA_VERSION &quot;0.2&quot;</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span><span class="preprocessor">#define QLUA_VERSION_MAJ 0</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span><span class="preprocessor">#define QLUA_VERSION_MIN 2</span>
+<a name="l00053"></a>00053 <span class="preprocessor"></span>
+<a name="l00054"></a>00054 <span class="keyword">namespace </span>qlua {
+<a name="l00055"></a>00055 
+<a name="l00056"></a>00056 <span class="keyword">inline</span> <span class="keywordtype">void</span> RaiseLuaError( lua_State* L, <span class="keyword">const</span> <span class="keywordtype">char</span>* errMsg ) {
+<a name="l00057"></a>00057     lua_pushstring( L, errMsg );
+<a name="l00058"></a>00058     lua_error( L );
+<a name="l00059"></a>00059 }
+<a name="l00060"></a>00060 <span class="keyword">inline</span> <span class="keywordtype">void</span> RaiseLuaError( lua_State* L, <span class="keyword">const</span> QString&amp; errMsg ) {
+<a name="l00061"></a>00061     RaiseLuaError( L, errMsg.toAscii().constData() );
+<a name="l00062"></a>00062 }
+<a name="l00063"></a>00063 <span class="keyword">inline</span> <span class="keywordtype">void</span> RaiseLuaError( lua_State* L, <span class="keyword">const</span> std::string&amp; errMsg ) {
+<a name="l00064"></a>00064     RaiseLuaError( L, errMsg.c_str() );
+<a name="l00065"></a>00065 }
+<a name="l00066"></a>00066 
+<a name="l00068"></a><a class="code" href="structqlua_1_1LuaDefaultSignatureMapper.html">00068</a> <span class="keyword">struct </span><a class="code" href="structqlua_1_1LuaDefaultSignatureMapper.html" title="Default mapper for method signature; returns name of method.">LuaDefaultSignatureMapper</a> : <a class="code" href="structILuaSignatureMapper.html" title="Interface for signature mappers: translate from a QObject method signature to a Lua function name...">ILuaSignatureMapper</a> {
+<a name="l00072"></a><a class="code" href="structqlua_1_1LuaDefaultSignatureMapper.html#a7a23f832ae240654b44131263868f2b1">00072</a>     QString <a class="code" href="structqlua_1_1LuaDefaultSignatureMapper.html#a7a23f832ae240654b44131263868f2b1">map</a>( <span class="keyword">const</span> QString&amp; sig )<span class="keyword"> const </span>{
+<a name="l00073"></a>00073         QString name = sig;
+<a name="l00074"></a>00074         name.truncate( sig.indexOf( <span class="stringliteral">&quot;(&quot;</span> ) );
+<a name="l00075"></a>00075         <span class="keywordflow">return</span> name;
+<a name="l00076"></a>00076     }
+<a name="l00077"></a>00077 };
+<a name="l00078"></a>00078 
+<a name="l00079"></a>00079 
+<a name="l00080"></a>00080 <span class="comment">//------------------------------------------------------------------------------</span>
+<a name="l00088"></a><a class="code" href="classqlua_1_1LuaContext.html">00088</a> <span class="comment"></span><span class="keyword">class </span><a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a> {
+<a name="l00095"></a>00095     <span class="keyword">struct </span>Method {
+<a name="l00096"></a>00096         QObject* obj_;
+<a name="l00097"></a>00097         QMetaMethod metaMethod_;
+<a name="l00098"></a>00098         QArgWrappers argumentWrappers_;
+<a name="l00099"></a>00099         <a class="code" href="classqlua_1_1LArgWrapper.html" title="Wrapper for objects returned from QObject method invocation or passes to Lua callbacks in response to...">LArgWrapper</a> returnWrapper_;
+<a name="l00100"></a>00100         Method( QObject* obj, <span class="keyword">const</span> QMetaMethod&amp; mm, <span class="keyword">const</span> QArgWrappers&amp; pw, <span class="keyword">const</span> <a class="code" href="classqlua_1_1LArgWrapper.html" title="Wrapper for objects returned from QObject method invocation or passes to Lua callbacks in response to...">LArgWrapper</a>&amp; rw ) :
+<a name="l00101"></a>00101         obj_( obj ), metaMethod_( mm ), argumentWrappers_( pw ), returnWrapper_( rw ) {}
+<a name="l00102"></a>00102     };
+<a name="l00103"></a>00103 <span class="keyword">public</span>:
+<a name="l00105"></a><a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb">00105</a>     <span class="keyword">enum</span> <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb" title="Delete mode: Specify how/if object shall be garbage collected.">ObjectDeleteMode</a> { 
+<a name="l00106"></a><a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad2d712e7dcb13878e4e2157ee4b7c50d">00106</a>         <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad2d712e7dcb13878e4e2157ee4b7c50d" title="Lifetime not managed by Lua; never garbage collected.">QOBJ_NO_DELETE</a>, 
+<a name="l00107"></a><a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eba717b0e95a25bdbb0dde634432bab5301">00107</a>         <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eba717b0e95a25bdbb0dde634432bab5301" title="Garbage collected: delete used.">QOBJ_IMMEDIATE_DELETE</a>, 
+<a name="l00108"></a><a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad652803d2a1049284dd83e4f64655b20">00108</a>         <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad652803d2a1049284dd83e4f64655b20" title="Garbage collected: QObject::deleteLater() used.">QOBJ_DELETE_LATER</a> 
+<a name="l00109"></a>00109     };
+<a name="l00110"></a>00110     <span class="keyword">typedef</span> QList&lt; Method &gt; Methods;
+<a name="l00111"></a>00111     <span class="keyword">typedef</span> QMap&lt; QObject*, QMap&lt; QString, Methods &gt; &gt; ObjectMethodMap;
+<a name="l00112"></a>00112     <span class="keyword">typedef</span> QMap&lt; QObject*, int &gt; ObjectReferenceMap;
+<a name="l00115"></a>00115     <a class="code" href="classqlua_1_1LuaContext.html#ac30a16cb34da2f3c811984c4505d58dd">LuaContext</a>( lua_State* L = 0 ); 
+<a name="l00117"></a><a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225">00117</a>     lua_State* <a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> L_; }
+<a name="l00119"></a><a class="code" href="classqlua_1_1LuaContext.html#af7326b49b3440911e84cf20452890969">00119</a>     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#af7326b49b3440911e84cf20452890969" title="Evaluate Lua code.">Eval</a>( <span class="keyword">const</span> <span class="keywordtype">char</span>* code ) {
+<a name="l00120"></a>00120         ReportErrors( luaL_dostring( L_, code ) );
+<a name="l00121"></a>00121     }
+<a name="l00125"></a><a class="code" href="classqlua_1_1LuaContext.html#a0439d1cf700c69c96cd649c099fbd65b">00125</a>     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#a0439d1cf700c69c96cd649c099fbd65b" title="Add QVariantMap: Either push it on the stack or set it as global.">AddQVariantMap</a>( <span class="keyword">const</span> QVariantMap&amp; vm, <span class="keyword">const</span> <span class="keywordtype">char</span>* name = 0 ) {        
+<a name="l00126"></a>00126         <a class="code" href="namespaceqlua.html#a2e62b33b667ddd39efb977140e473781" title="Create Lua table from QVariantMap and push it on the Lua stack.">VariantMapToLuaTable</a>( vm, L_ );
+<a name="l00127"></a>00127         <span class="keywordflow">if</span>( name ) lua_setglobal( L_, name );
+<a name="l00128"></a>00128     }
+<a name="l00132"></a><a class="code" href="classqlua_1_1LuaContext.html#a67bf8308d9fac5a1ec8f1aa30bdc34ba">00132</a>     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#a67bf8308d9fac5a1ec8f1aa30bdc34ba" title="Add QVariantList: Either push it on the stack or set it as global.">AddQVariantList</a>( <span class="keyword">const</span> QVariantList&amp; vl, <span class="keyword">const</span> <span class="keywordtype">char</span>* name = 0 ) {      
+<a name="l00133"></a>00133         <a class="code" href="namespaceqlua.html#a85a31ceded331bf95be77c8772fb4b7b" title="Create Lua table from QVariantList and push it on the Lua stack.">VariantListToLuaTable</a>( vl, L_ );
+<a name="l00134"></a>00134         <span class="keywordflow">if</span>( name ) lua_setglobal( L_, name );
+<a name="l00135"></a>00135     }
+<a name="l00139"></a><a class="code" href="classqlua_1_1LuaContext.html#a718dc6321d0bdc0540eba7a54ea9e046">00139</a>     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#a718dc6321d0bdc0540eba7a54ea9e046" title="Add QStringList: Either push it on the stack or set it as global.">AddQStringList</a>( <span class="keyword">const</span> QStringList&amp; sl, <span class="keyword">const</span> <span class="keywordtype">char</span>* name = 0 ){     
+<a name="l00140"></a>00140         <a class="code" href="namespaceqlua.html#a09d459eb28c095b3c8719285a22ea000" title="Create Lua table from QStringList and push it on the Lua stack.">StringListToLuaTable</a>( sl, L_ );
+<a name="l00141"></a>00141         <span class="keywordflow">if</span>( name ) lua_setglobal( L_, name );
+<a name="l00142"></a>00142     }
+<a name="l00146"></a><a class="code" href="classqlua_1_1LuaContext.html#ab43bf823cc907251fe6a791e763c268c">00146</a>     <span class="keyword">template</span> &lt; <span class="keyword">typename</span> T &gt; <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#ab43bf823cc907251fe6a791e763c268c" title="Add QList of numeric values: Either push it on the stack or set it as global.">AddQList</a>( <span class="keyword">const</span> QList&lt; T &gt;&amp; l, <span class="keyword">const</span> <span class="keywordtype">char</span>* name = 0 ) {     
+<a name="l00147"></a>00147         NumberListToLuaTable&lt; T &gt;( l, L_ );
+<a name="l00148"></a>00148         <span class="keywordflow">if</span>( name ) lua_setglobal( L_, name );
+<a name="l00149"></a>00149     }
+<a name="l00168"></a>00168     <span class="keywordtype">void</span> <a class="code" href="classqlua_1_1LuaContext.html#ab532f8d4660224cab75e320e59c2eacb" title="Add QObject to Lua context as a Lua table.">AddQObject</a>( QObject* obj, 
+<a name="l00169"></a>00169                      <span class="keyword">const</span> <span class="keywordtype">char</span>* tableName = 0,
+<a name="l00170"></a>00170                      <span class="keywordtype">bool</span> cache = <span class="keyword">false</span>, 
+<a name="l00171"></a>00171                      <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6eb" title="Delete mode: Specify how/if object shall be garbage collected.">ObjectDeleteMode</a> deleteMode = <a class="code" href="classqlua_1_1LuaContext.html#a1bca84934c223cfc1829355925ede6ebad2d712e7dcb13878e4e2157ee4b7c50d" title="Lifetime not managed by Lua; never garbage collected.">QOBJ_NO_DELETE</a>,
+<a name="l00172"></a>00172                      <span class="keyword">const</span> <a class="code" href="structILuaSignatureMapper.html" title="Interface for signature mappers: translate from a QObject method signature to a Lua function name...">ILuaSignatureMapper</a>&amp; mapper = <a class="code" href="structqlua_1_1LuaDefaultSignatureMapper.html" title="Default mapper for method signature; returns name of method.">LuaDefaultSignatureMapper</a>(),
+<a name="l00173"></a>00173                      <span class="keyword">const</span> QStringList&amp; methodNames = QStringList(),
+<a name="l00174"></a>00174                      <span class="keyword">const</span> QList&lt; QMetaMethod::MethodType &gt;&amp; methodTypes =
+<a name="l00175"></a>00175                            QList&lt; QMetaMethod::MethodType &gt;()  );
+<a name="l00181"></a><a class="code" href="classqlua_1_1LuaContext.html#a4f2ef9926b554b052b4099a661efe6a4">00181</a>     <span class="keywordtype">bool</span> <a class="code" href="classqlua_1_1LuaContext.html#a4f2ef9926b554b052b4099a661efe6a4" title="Return value of global garbage collection policy.">OwnQObjects</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ownQObjects_; }
+<a name="l00183"></a><a class="code" href="classqlua_1_1LuaContext.html#ac1231f60aabb9f2b339edbfee92f3b92">00183</a>     <a class="code" href="classqlua_1_1LuaContext.html#ac1231f60aabb9f2b339edbfee92f3b92" title="Destructor: Destroys Lua state if owned by this object.">~LuaContext</a>() {
+<a name="l00184"></a>00184         <span class="keywordflow">if</span>( !wrappedContext_ ) lua_close( L_ );
+<a name="l00185"></a>00185     }
+<a name="l00186"></a>00186 <span class="keyword">private</span>:
+<a name="l00188"></a>00188     <span class="keywordtype">void</span> RemoveObject( QObject* obj );
+<a name="l00190"></a>00190 
 <a name="l00191"></a>00191 
-<a name="l00192"></a>00192 
-<a name="l00193"></a>00193 
-<a name="l00194"></a>00194     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke0( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00195"></a>00195     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke1( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00196"></a>00196     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke2( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00197"></a>00197     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke3( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00198"></a>00198     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke4( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00199"></a>00199     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke5( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00200"></a>00200     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke6( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00201"></a>00201     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke7( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00202"></a>00202     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke8( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00203"></a>00203     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke9( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
-<a name="l00204"></a>00204     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke10( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00192"></a>00192     <span class="keyword">static</span> <span class="keywordtype">int</span> QtConnect( lua_State* L );
+<a name="l00194"></a>00194     <span class="keyword">static</span> <span class="keywordtype">int</span> QtDisconnect( lua_State* L );
+<a name="l00199"></a>00199     <span class="keyword">static</span> <span class="keywordtype">int</span> InvokeMethod( lua_State* L );
+<a name="l00201"></a>00201     <span class="keyword">static</span> <span class="keywordtype">int</span> DeleteObject( lua_State* L );
+<a name="l00203"></a>00203     <span class="keyword">static</span> <span class="keywordtype">int</span> SetQObjectsOwnership( lua_State* L );
+<a name="l00205"></a>00205 
 <a name="l00206"></a>00206 
-<a name="l00207"></a>00207     <span class="keywordtype">void</span> ReportErrors( <span class="keywordtype">int</span> status ) {
-<a name="l00208"></a>00208         <span class="keywordflow">if</span>( status != 0 ) {
-<a name="l00209"></a>00209             std::string err = lua_tostring( L_, -1 );
-<a name="l00210"></a>00210             lua_pop( L_, 1 );
-<a name="l00211"></a>00211             <span class="keywordflow">throw</span> std::runtime_error( err );
-<a name="l00212"></a>00212         }
-<a name="l00213"></a>00213     }
-<a name="l00215"></a>00215     <span class="keyword">static</span> <span class="keywordtype">void</span> RegisterTypes();
-<a name="l00216"></a>00216 <span class="keyword">private</span>:
-<a name="l00218"></a>00218     lua_State* L_;
-<a name="l00220"></a>00220     <span class="keywordtype">bool</span> wrappedContext_;   
-<a name="l00222"></a>00222     <span class="keywordtype">bool</span> ownQObjects_;
-<a name="l00225"></a>00225     ObjectMethodMap objMethods_;
-<a name="l00227"></a>00227     ObjectReferenceMap objRefs_;
-<a name="l00233"></a>00233     LuaCallbackDispatcher dispatcher_;
-<a name="l00234"></a>00234 };
-<a name="l00235"></a>00235 
-<a name="l00236"></a>00236 
-<a name="l00241"></a>00241 <span class="keyword">template</span> &lt; <span class="keyword">typename</span> T &gt;
-<a name="l00242"></a><a class="code" href="namespaceqlua.html#a5ad9cc3f6dd07d950014f23efd4a4d74">00242</a> T <a class="code" href="namespaceqlua.html#a5ad9cc3f6dd07d950014f23efd4a4d74">GetValue</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
-<a name="l00243"></a>00243     lua_getglobal( lc.<a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>(), name.toAscii().constData() );
-<a name="l00244"></a>00244     <span class="keywordflow">return</span> luaL_checknumber( lc.<a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>(), -1 );
-<a name="l00245"></a>00245 }
-<a name="l00246"></a>00246 
-<a name="l00248"></a>00248 <span class="keyword">template</span> &lt; <span class="keyword">typename</span> T &gt;
-<a name="l00249"></a><a class="code" href="namespaceqlua.html#ad2eb6b38fa3c316568a7b2f54cc5bba8">00249</a> QList&lt; T &gt; <a class="code" href="namespaceqlua.html#ad2eb6b38fa3c316568a7b2f54cc5bba8" title="Extract list of number.">GetValues</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
-<a name="l00250"></a>00250     <span class="keywordflow">if</span>( !lua_istable( lc.<a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>(), -1 ) ) <span class="keywordflow">throw</span> std::runtime_error( <span class="stringliteral">&quot;Not a lua table&quot;</span> );
-<a name="l00251"></a>00251     <span class="keywordflow">return</span> ParseLuaTableAsNumberList&lt; T &gt;( lc.<a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>(), -1 );
-<a name="l00252"></a>00252 }
-<a name="l00253"></a>00253 
-<a name="l00255"></a>00255 <span class="keyword">template</span> &lt;&gt;
-<a name="l00256"></a><a class="code" href="namespaceqlua.html#ab7ded0502033d7e36c103de21da0968f">00256</a> <span class="keyword">inline</span> QString <a class="code" href="namespaceqlua.html#ab7ded0502033d7e36c103de21da0968f" title="Extract string.">GetValue&lt; QString &gt;</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
-<a name="l00257"></a>00257     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
-<a name="l00258"></a>00258     <span class="keywordflow">return</span> luaL_checkstring( lc.LuaState(), -1 );
+<a name="l00207"></a>00207 
+<a name="l00208"></a>00208     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke0( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00209"></a>00209     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke1( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00210"></a>00210     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke2( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00211"></a>00211     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke3( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00212"></a>00212     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke4( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00213"></a>00213     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke5( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00214"></a>00214     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke6( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00215"></a>00215     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke7( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00216"></a>00216     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke8( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00217"></a>00217     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke9( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00218"></a>00218     <span class="keyword">static</span> <span class="keywordtype">int</span> Invoke10( <span class="keyword">const</span> Method* mi, <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; L );
+<a name="l00220"></a>00220 
+<a name="l00221"></a>00221     <span class="keywordtype">void</span> ReportErrors( <span class="keywordtype">int</span> status ) {
+<a name="l00222"></a>00222         <span class="keywordflow">if</span>( status != 0 ) {
+<a name="l00223"></a>00223             std::string err = lua_tostring( L_, -1 );
+<a name="l00224"></a>00224             lua_pop( L_, 1 );
+<a name="l00225"></a>00225             <span class="keywordflow">throw</span> std::runtime_error( err );
+<a name="l00226"></a>00226         }
+<a name="l00227"></a>00227     }
+<a name="l00229"></a>00229     <span class="keyword">static</span> <span class="keywordtype">void</span> RegisterTypes();
+<a name="l00230"></a>00230 <span class="keyword">private</span>:
+<a name="l00232"></a>00232     lua_State* L_;
+<a name="l00234"></a>00234     <span class="keywordtype">bool</span> wrappedContext_;   
+<a name="l00236"></a>00236     <span class="keywordtype">bool</span> ownQObjects_;
+<a name="l00239"></a>00239     ObjectMethodMap objMethods_;
+<a name="l00241"></a>00241     ObjectReferenceMap objRefs_;
+<a name="l00247"></a>00247     LuaCallbackDispatcher dispatcher_;
+<a name="l00248"></a>00248 };
+<a name="l00249"></a>00249 
+<a name="l00250"></a>00250 
+<a name="l00255"></a>00255 <span class="keyword">template</span> &lt; <span class="keyword">typename</span> T &gt;
+<a name="l00256"></a><a class="code" href="namespaceqlua.html#a5ad9cc3f6dd07d950014f23efd4a4d74">00256</a> T <a class="code" href="namespaceqlua.html#a5ad9cc3f6dd07d950014f23efd4a4d74">GetValue</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
+<a name="l00257"></a>00257     lua_getglobal( lc.<a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>(), name.toAscii().constData() );
+<a name="l00258"></a>00258     <span class="keywordflow">return</span> luaL_checknumber( lc.<a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>(), -1 );
 <a name="l00259"></a>00259 }
 <a name="l00260"></a>00260 
-<a name="l00262"></a>00262 <span class="keyword">template</span> &lt;&gt;
-<a name="l00263"></a><a class="code" href="namespaceqlua.html#abc565e5cbb0cb7e9d117678e91cd276d">00263</a> <span class="keyword">inline</span> QVariantMap <a class="code" href="namespaceqlua.html#abc565e5cbb0cb7e9d117678e91cd276d" title="Extract Lua table as variant map.">GetValue&lt; QVariantMap &gt;</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
-<a name="l00264"></a>00264     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
-<a name="l00265"></a>00265     <span class="keywordflow">if</span>( !lua_istable( lc.LuaState(), -1 ) ) <span class="keywordflow">throw</span> std::runtime_error( <span class="stringliteral">&quot;Not a lua table&quot;</span> );
-<a name="l00266"></a>00266     <span class="keywordflow">return</span> <a class="code" href="namespaceqlua.html#a4e7aea7b09d9a7c719458d4e6cea3185" title="Create QVariantMap from Lua table.">ParseLuaTable</a>( lc.LuaState(), -1 );
-<a name="l00267"></a>00267 }
-<a name="l00268"></a>00268 
-<a name="l00270"></a>00270 <span class="keyword">template</span> &lt;&gt;
-<a name="l00271"></a><a class="code" href="namespaceqlua.html#a732cf514b256f7a8fcacf7c3f035a83b">00271</a> <span class="keyword">inline</span> QVariantList <a class="code" href="namespaceqlua.html#a732cf514b256f7a8fcacf7c3f035a83b" title="Extract Lua table as variant list.">GetValue&lt; QVariantList &gt;</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
-<a name="l00272"></a>00272     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
-<a name="l00273"></a>00273     <span class="keywordflow">if</span>( !lua_istable( lc.LuaState(), -1 ) ) <span class="keywordflow">throw</span> std::runtime_error( <span class="stringliteral">&quot;Not a lua table&quot;</span> );
-<a name="l00274"></a>00274     <span class="keywordflow">return</span> <a class="code" href="namespaceqlua.html#a9260f5abef3aaca69c3bb5dda45aa6f6" title="Create QVariantList from Lua table.">ParseLuaTableAsVariantList</a>( lc.LuaState(), -1 );
-<a name="l00275"></a>00275 }
-<a name="l00276"></a>00276 
-<a name="l00278"></a>00278 <span class="keyword">template</span> &lt;&gt;
-<a name="l00279"></a><a class="code" href="namespaceqlua.html#a0d5bc085fe48363f98a56d7914d4c35f">00279</a> <span class="keyword">inline</span> QStringList <a class="code" href="namespaceqlua.html#a0d5bc085fe48363f98a56d7914d4c35f" title="Extract Lua table as string list.">GetValue&lt; QStringList &gt;</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
-<a name="l00280"></a>00280     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
-<a name="l00281"></a>00281     <span class="keywordflow">if</span>( !lua_istable( lc.LuaState(), -1 ) ) <span class="keywordflow">throw</span> std::runtime_error( <span class="stringliteral">&quot;Not a lua table&quot;</span> );
-<a name="l00282"></a>00282     <span class="keywordflow">return</span> <a class="code" href="namespaceqlua.html#ab843c929e3c430a311260d72f21272a5" title="Create QStringList from Lua table.">ParseLuaTableAsStringList</a>( lc.LuaState(), -1 );
-<a name="l00283"></a>00283 }
-<a name="l00284"></a>00284 
-<a name="l00285"></a>00285 }
+<a name="l00262"></a>00262 <span class="keyword">template</span> &lt; <span class="keyword">typename</span> T &gt;
+<a name="l00263"></a><a class="code" href="namespaceqlua.html#ad2eb6b38fa3c316568a7b2f54cc5bba8">00263</a> QList&lt; T &gt; <a class="code" href="namespaceqlua.html#ad2eb6b38fa3c316568a7b2f54cc5bba8" title="Extract list of number.">GetValues</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
+<a name="l00264"></a>00264     <span class="keywordflow">if</span>( !lua_istable( lc.<a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>(), -1 ) ) <span class="keywordflow">throw</span> std::runtime_error( <span class="stringliteral">&quot;Not a lua table&quot;</span> );
+<a name="l00265"></a>00265     <span class="keywordflow">return</span> ParseLuaTableAsNumberList&lt; T &gt;( lc.<a class="code" href="classqlua_1_1LuaContext.html#a783d1bb068d5c2efdd0f6665e93f1225" title="Return Lua state.">LuaState</a>(), -1 );
+<a name="l00266"></a>00266 }
+<a name="l00267"></a>00267 
+<a name="l00269"></a>00269 <span class="keyword">template</span> &lt;&gt;
+<a name="l00270"></a><a class="code" href="namespaceqlua.html#ab7ded0502033d7e36c103de21da0968f">00270</a> <span class="keyword">inline</span> QString <a class="code" href="namespaceqlua.html#ab7ded0502033d7e36c103de21da0968f" title="Extract string.">GetValue&lt; QString &gt;</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
+<a name="l00271"></a>00271     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
+<a name="l00272"></a>00272     <span class="keywordflow">return</span> luaL_checkstring( lc.LuaState(), -1 );
+<a name="l00273"></a>00273 }
+<a name="l00274"></a>00274 
+<a name="l00276"></a>00276 <span class="keyword">template</span> &lt;&gt;
+<a name="l00277"></a><a class="code" href="namespaceqlua.html#abc565e5cbb0cb7e9d117678e91cd276d">00277</a> <span class="keyword">inline</span> QVariantMap <a class="code" href="namespaceqlua.html#abc565e5cbb0cb7e9d117678e91cd276d" title="Extract Lua table as variant map.">GetValue&lt; QVariantMap &gt;</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
+<a name="l00278"></a>00278     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
+<a name="l00279"></a>00279     <span class="keywordflow">if</span>( !lua_istable( lc.LuaState(), -1 ) ) <span class="keywordflow">throw</span> std::runtime_error( <span class="stringliteral">&quot;Not a lua table&quot;</span> );
+<a name="l00280"></a>00280     <span class="keywordflow">return</span> <a class="code" href="namespaceqlua.html#a4e7aea7b09d9a7c719458d4e6cea3185" title="Create QVariantMap from Lua table.">ParseLuaTable</a>( lc.LuaState(), -1 );
+<a name="l00281"></a>00281 }
+<a name="l00282"></a>00282 
+<a name="l00284"></a>00284 <span class="keyword">template</span> &lt;&gt;
+<a name="l00285"></a><a class="code" href="namespaceqlua.html#a732cf514b256f7a8fcacf7c3f035a83b">00285</a> <span class="keyword">inline</span> QVariantList <a class="code" href="namespaceqlua.html#a732cf514b256f7a8fcacf7c3f035a83b" title="Extract Lua table as variant list.">GetValue&lt; QVariantList &gt;</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
+<a name="l00286"></a>00286     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
+<a name="l00287"></a>00287     <span class="keywordflow">if</span>( !lua_istable( lc.LuaState(), -1 ) ) <span class="keywordflow">throw</span> std::runtime_error( <span class="stringliteral">&quot;Not a lua table&quot;</span> );
+<a name="l00288"></a>00288     <span class="keywordflow">return</span> <a class="code" href="namespaceqlua.html#a9260f5abef3aaca69c3bb5dda45aa6f6" title="Create QVariantList from Lua table.">ParseLuaTableAsVariantList</a>( lc.LuaState(), -1 );
+<a name="l00289"></a>00289 }
+<a name="l00290"></a>00290 
+<a name="l00292"></a>00292 <span class="keyword">template</span> &lt;&gt;
+<a name="l00293"></a><a class="code" href="namespaceqlua.html#a0d5bc085fe48363f98a56d7914d4c35f">00293</a> <span class="keyword">inline</span> QStringList <a class="code" href="namespaceqlua.html#a0d5bc085fe48363f98a56d7914d4c35f" title="Extract Lua table as string list.">GetValue&lt; QStringList &gt;</a>( <span class="keyword">const</span> <a class="code" href="classqlua_1_1LuaContext.html" title="Lua context. Creates or wraps an existing Lua state.">LuaContext</a>&amp; lc, <span class="keyword">const</span> QString&amp; name ) {
+<a name="l00294"></a>00294     lua_getglobal( lc.LuaState(), name.toAscii().constData() );
+<a name="l00295"></a>00295     <span class="keywordflow">if</span>( !lua_istable( lc.LuaState(), -1 ) ) <span class="keywordflow">throw</span> std::runtime_error( <span class="stringliteral">&quot;Not a lua table&quot;</span> );
+<a name="l00296"></a>00296     <span class="keywordflow">return</span> <a class="code" href="namespaceqlua.html#ab843c929e3c430a311260d72f21272a5" title="Create QStringList from Lua table.">ParseLuaTableAsStringList</a>( lc.LuaState(), -1 );
+<a name="l00297"></a>00297 }
+<a name="l00298"></a>00298 
+<a name="l00299"></a>00299 }
 </pre></div></div>
 </div>
 <!-- window showing the filter options -->
@@ -281,7 +289,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Thu Mar 15 2012 12:38:45 for QLua by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Thu Mar 15 2012 16:16:54 for QLua by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4 </small></address>
 </body>

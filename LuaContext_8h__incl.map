@@ -1,5 +1,6 @@
 <map id="G" name="G">
-<area shape="rect" id="node23" href="$LuaCallbackDispatcher_8h.html" title="Qt signals to Lua callback functions." alt="" coords="909,83,1077,112"/>
-<area shape="rect" id="node27" href="$LuaArguments_8h.html" title="Declarations and definitions of constructors for creating C++ values from Lua values." alt="" coords="619,160,736,189"/>
-<area shape="rect" id="node44" href="$LuaQtTypes_8h.html" title="Utility functions for converting data types between Lua and Qt." alt="" coords="497,237,601,267"/>
+<area shape="rect" id="node23" href="$LuaCallbackDispatcher_8h.html" title="Qt signals to Lua callback functions." alt="" coords="1081,83,1249,112"/>
+<area shape="rect" id="node27" href="$LuaArguments_8h.html" title="Declarations and definitions of constructors for creating C++ values from Lua values." alt="" coords="583,160,700,189"/>
+<area shape="rect" id="node44" href="$LuaQtTypes_8h.html" title="Utility functions for converting data types between Lua and Qt." alt="" coords="399,237,503,267"/>
+<area shape="rect" id="node61" href="$ILuaSignatureMapper_8h_source.html" title="ILuaSignatureMapper.h" alt="" coords="928,160,1083,189"/>
 </map>
