@@ -39,7 +39,7 @@ link_directories( ${LUA_LIB_DIR} ${QT_LIBRARY_DIR} )
 
 #library
 add_library( qlua LuaCallbackDispatcher.h   LuaContext.h   LuaArguments.h LuaQtTypes.h
-                  LuaCallbackDispatcher.cpp LuaContext.cpp )
+                  LuaCallbackDispatcher.cpp LuaContext.cpp ILuaSignatureMapper.h )
 target_link_libraries( qlua ${LUA_LIBRARIES} )
 
 #test app

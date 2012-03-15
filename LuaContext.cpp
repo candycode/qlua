@@ -71,6 +71,7 @@ void LuaContext::AddQObject( QObject* obj,
                              const char* tableName,
                              bool cache, 
                              ObjectDeleteMode deleteMode,
+                             const ILuaSignatureMapper& mapper,
                              const QStringList& methodNames,
                              const QList< QMetaMethod::MethodType >& methodTypes ) {
     
@@ -98,8 +99,7 @@ void LuaContext::AddQObject( QObject* obj,
     const QMetaObject* mo = obj->metaObject();
     for( int i = 0; i != mo->methodCount(); ++i ) {
         QMetaMethod mm = mo->method( i );
-        QString name = mm.signature();
-        name.truncate( name.indexOf("(") );
+        QString name = mapper.map( mm.signature() );
         if( !mn.isEmpty() && !mn.contains( name ) ) continue;
         if( !mt.isEmpty() && !mt.contains( mm.methodType() ) ) continue;
         typedef QList< QByteArray > Params;

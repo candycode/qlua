@@ -37,9 +37,11 @@ int main() {
         
         TestObject myobj;
         myobj.setObjectName( "MyObject" );
+
         //only add a single method to the Lua table
         ctx.AddQObject( &myobj, "myobj", false,
-                        qlua::LuaContext::QOBJ_NO_DELETE, QStringList() << "emitSignal" );
+                        qlua::LuaContext::QOBJ_NO_DELETE, qlua::LuaDefaultSignatureMapper(),
+                        QStringList() << "emitSignal" );
         ctx.Eval( "qlua.connect( myobj, 'aSignal(QString)', "
                     "function(msg) print( 'Lua callback called with data: ' .. msg ); end );"
                   "print( 'object name: ' .. myobj.objectName );"

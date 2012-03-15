@@ -43,10 +43,9 @@ extern "C" {
 #include <QStringList>
 
 #include "LuaCallbackDispatcher.h"
-
 #include "LuaArguments.h"
 #include "LuaQtTypes.h"
-
+#include "ILuaSignatureMapper.h"
 
 #define QLUA_VERSION "0.2"
 #define QLUA_VERSION_MAJ 0
@@ -64,6 +63,18 @@ inline void RaiseLuaError( lua_State* L, const QString& errMsg ) {
 inline void RaiseLuaError( lua_State* L, const std::string& errMsg ) {
     RaiseLuaError( L, errMsg.c_str() );
 }
+
+/// @brief Default mapper for method signature; returns name of method
+struct LuaDefaultSignatureMapper : ILuaSignatureMapper {
+    /// Extract and return method name
+    /// @param signature method signature
+    /// @return method name 
+    QString map( const QString& sig ) const {
+        QString name = sig;
+        name.truncate( sig.indexOf( "(" ) );
+        return name;
+    }
+};
 
 
 //------------------------------------------------------------------------------
@@ -137,18 +148,20 @@ public:
         if( name ) lua_setglobal( L_, name );
     }
     /// @brief Add QObject to Lua context as a Lua table.
-	///
-	/// When a new QObject is added this method:
-	///   -# adds a new QObject reference in the QObject-Method database
-	///   -# iterates over the callable QObject's methods and for each method
-	///      adds a Method object with information required to invoke the QObject method
-	///   -# if caching is enabled it creates a Lua reference and adds the reference
-	///      into the QObject-Reference database
+    ///
+    /// When a new QObject is added this method:
+    ///   -# adds a new QObject reference in the QObject-Method database
+    ///   -# iterates over the callable QObject's methods and for each method
+    ///      adds a Method object with information required to invoke the QObject method
+    ///   -# if caching is enabled it creates a Lua reference and adds the reference
+    ///      into the QObject-Reference database
     /// @param obj QObject
     /// @param tableName global name of Lua table wrapping object; if null object is
     ///                  left on stack
     /// @param cache if true object won't be re-added to LuaContext. If @c tableName is
     ///              not null a new global variable pointing at the previoulsy added object will be added.
+    /// @param mapper maps signature string to Lua method name; this allows to convert overloaed methods
+    ///               to different Lua functions.
     /// @param deleteMode choose how/if object shall be garbage collected; @see ObjectDeleteMode
     /// @param methodNames if not empty only the methods with the names in this list are added to the Lua table
     /// @param methodTypes if not empty only the methods of the required types are added to the Lua table  
@@ -156,41 +169,42 @@ public:
                      const char* tableName = 0,
                      bool cache = false, 
                      ObjectDeleteMode deleteMode = QOBJ_NO_DELETE,
+                     const ILuaSignatureMapper& mapper = LuaDefaultSignatureMapper(),
                      const QStringList& methodNames = QStringList(),
                      const QList< QMetaMethod::MethodType >& methodTypes =
                            QList< QMetaMethod::MethodType >()  );
     /// @brief Return value of global garbage collection policy.
     /// 
     /// The global object ownership policy is set from Lua through a call to
-	/// @c qlua.ownQObjects(). The ownership policy affects the QObjects returned
-	/// by QObject methods only.
+    /// @c qlua.ownQObjects(). The ownership policy affects the QObjects returned
+    /// by QObject methods only.
     bool OwnQObjects() const { return ownQObjects_; }
-	/// Destructor: Destroys Lua state if owned by this object
+    /// Destructor: Destroys Lua state if owned by this object
     ~LuaContext() {
         if( !wrappedContext_ ) lua_close( L_ );
     }
 private:
-	/// Remove object from databases.
+    /// Remove object from databases.
     void RemoveObject( QObject* obj );
     /// @name Lua interface
-	//@{
-	/// Connect Qt signal to Lua function or QObject method
+    //@{
+    /// Connect Qt signal to Lua function or QObject method
     static int QtConnect( lua_State* L );
-	/// Disconnect Qt signal from Lua function or QObject method
+    /// Disconnect Qt signal from Lua function or QObject method
     static int QtDisconnect( lua_State* L );
-	/// Invoke QObject method, this is the function that is called
-	/// by each Lua function added to the QObject table: information
-	/// on QObject instance and method to call are extracted from 
-	/// closure environment as upvalues
-	static int InvokeMethod( lua_State* L );
-	/// Invoked automatically by Lua when value is garbage collected 
+    /// Invoke QObject method, this is the function that is called
+    /// by each Lua function added to the QObject table: information
+    /// on QObject instance and method to call are extracted from 
+    /// closure environment as upvalues
+    static int InvokeMethod( lua_State* L );
+    /// Invoked automatically by Lua when value is garbage collected 
     static int DeleteObject( lua_State* L );
-	/// Set default policy for ownership of returned QObjects
+    /// Set default policy for ownership of returned QObjects
     static int SetQObjectsOwnership( lua_State* L );
     //@}
-	//@{
-	/// Called by Invoke depending on the number of arguments in
-	/// method signature.
+    //@{
+    /// Called by Invoke depending on the number of arguments in
+    /// method signature.
     static int Invoke0( const Method* mi, LuaContext& L );
     static int Invoke1( const Method* mi, LuaContext& L );
     static int Invoke2( const Method* mi, LuaContext& L );
@@ -203,33 +217,33 @@ private:
     static int Invoke9( const Method* mi, LuaContext& L );
     static int Invoke10( const Method* mi, LuaContext& L );
     //@}
-	/// Push error message on Lua stack and trigger a Lua error.
-	void ReportErrors( int status ) {
+    /// Push error message on Lua stack and trigger a Lua error.
+    void ReportErrors( int status ) {
         if( status != 0 ) {
             std::string err = lua_tostring( L_, -1 );
             lua_pop( L_, 1 );
             throw std::runtime_error( err );
         }
     }
-	/// Register supported types.
+    /// Register supported types.
     static void RegisterTypes();
 private:
-	/// (possibly wrapped) Lua state
+    /// (possibly wrapped) Lua state
     lua_State* L_;
-	/// Signal if context is wrapped or owned
+    /// Signal if context is wrapped or owned
     bool wrappedContext_;   
-	/// State variable affecting the life-time management of returned QObjects
+    /// State variable affecting the life-time management of returned QObjects
     bool ownQObjects_;
-	/// @brief QObject-Method database: Each QObject is stored together with the list
-	/// of associated method signatures
+    /// @brief QObject-Method database: Each QObject is stored together with the list
+    /// of associated method signatures
     ObjectMethodMap objMethods_;
     /// QObject-Lua reference database  
-	ObjectReferenceMap objRefs_;
-	/// @brief Dispatcher object: signal->dispatcher->Lua function connection.
-	///
-	/// Each time a connection between a Qt signal and a Lua function is requested
-	/// a new connection is established between the signal and a dynamically created
-	/// proxy method which invokes the Lua function.
+    ObjectReferenceMap objRefs_;
+    /// @brief Dispatcher object: signal->dispatcher->Lua function connection.
+    ///
+    /// Each time a connection between a Qt signal and a Lua function is requested
+    /// a new connection is established between the signal and a dynamically created
+    /// proxy method which invokes the Lua function.
     LuaCallbackDispatcher dispatcher_;
 };
 
