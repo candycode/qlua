@@ -88,7 +88,7 @@ E.g.
     ...
     // connect signal to lua callback and evaluate Lua expressions
     lc.Eval( "qlua.connect( qobj1, 'aSignal(QString)',"
-                            "function( msg ) print( msg ) end" );
+                            "function( msg ) print( msg ) end)" );
     lc.Eval( "qobj1.emitSignal( 'hello' )" ); 
 ```
 
