@@ -1,0 +1,10 @@
+object name: MyObject
+emitting signal aSignal(hello)
+Lua callback called with data: hello
+aSlot() called with data: hello
+object 2 name: MyObject2
+Object 2 garbage collected by Lua
+hi
+1 hello
+New Object
+1 3
